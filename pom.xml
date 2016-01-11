@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>nz.ac.waikato.cms.adams</groupId>
+    <artifactId>adams-pom</artifactId>
+    <version>0.4.13-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>adams-applications-pom</artifactId>
+  <version>0.4.13-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>adams-applications-pom</name>
+  <description>The project object model for all custom ADAMS applications modules.</description>
+  <url>https://adams.cms.waikato.ac.nz/</url>
+  <organization>
+    <name>University of Waikato, Hamilton, NZ</name>
+    <url>http://www.waikato.ac.nz/</url>
+  </organization>
+
+  <modules>
+    <module>adams-annotator</module>
+  </modules>
+
+  <properties>
+    <adams.version>0.4.13-SNAPSHOT</adams.version>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+  </properties>
+
+  <scm>
+    <connection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</connection>
+    <developerConnection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</developerConnection>
+    <url>https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</url>
+  </scm>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.5</version>
+          <configuration>
+            <tagBase>https://svn.cms.waikato.ac.nz/svn/adams/applications/tags</tagBase>
+            <useReleaseProfile>false</useReleaseProfile>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
