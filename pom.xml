@@ -23,6 +23,7 @@
 
   <modules>
     <module>adams-annotator</module>
+    <module>adams-spectral-app</module>
   </modules>
 
   <properties>
