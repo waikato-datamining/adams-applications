@@ -12,11 +12,8 @@
 # - full classname has to be provided
 #
 # author:  FracPete (fracpete at waikato dot ac dot nz)
-# version: $Revision: 8265 $
+# version: $Revision: 5640 $
 
 # whether to show the large tooltip with the global info and capabilities
 # in the class tree
 ShowGlobalInfoToolTip=false
-
-# classifiers
-moa.options.ClassOption=weka.gui.MOAClassOptionEditor
