@@ -10,7 +10,7 @@
   </parent>
 
   <artifactId>adams-spectral-app</artifactId>
-  <version>16.3.0-SNAPSHOT</version>
+  <version>16.4.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>adams-spectral-app</name>
@@ -47,7 +47,7 @@
     <class.adams.env>adams.env.Environment</class.adams.env>
     <class.adams.main>adams.gui.Main</class.adams.main>
     <adams.test.multiprocess.enabled>false</adams.test.multiprocess.enabled>
-    <adams-spectral.version>16.3.0-SNAPSHOT</adams-spectral.version>
+    <adams-spectral.version>16.4.0-SNAPSHOT</adams-spectral.version>
   </properties>
 
   <dependencies>
