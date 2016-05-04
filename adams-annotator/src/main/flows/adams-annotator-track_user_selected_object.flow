@@ -1,431 +1,93 @@
 # Project: adams
-# Date: 2016-01-14 15:17:09
+# Date: 2016-05-05 11:16:33
 # User: fracpete
 # Charset: UTF-8
-#
-adams.flow.control.Flow
-	-annotation
-	Let\'s the user select an initial object to be tracked.
-	-actor
-		adams.flow.standalone.CallableActors
-			-actor
-				adams.flow.sink.ImageViewer
-					-name
-					Frame
-					-short-title
-					true
-					-writer
-						adams.gui.print.NullWriter
-					-zoom
-					-1.0
-					-selection-processor
-						adams.gui.visualization.image.selection.NullProcessor
-					-image-overlay
-						adams.gui.visualization.image.QuadrilateralLocationsOverlayFromReport
-							-regexp
-							Tracker\\.Current
-			-actor
-				adams.flow.source.StorageValue
-					-name
-					background
-					-storage-name
-					background
-			-actor
-				adams.flow.sink.TrailDisplay
-					-name
-					Trail
-					-short-title
-					true
-					-x
-					-3
-					-writer
-						adams.gui.print.NullWriter
-					-paintlet
-						adams.gui.visualization.trail.paintlet.Circles
-	-actor
-		adams.flow.standalone.SetVariable
-			-var-name
-			hm_factor
-			-var-value
-			16
-	-actor
-		adams.flow.source.Start
-	-actor
-		adams.flow.control.Trigger
-			-name
-			process video
-			-tee
-				adams.flow.source.SelectFile
-					-extension
-					mp4
-			-tee
-				adams.flow.control.Tee
-					-name
-					file name
-					-tee
-						adams.flow.transformer.BaseName
-							-remove-extensions
-							true
-					-tee
-						adams.flow.transformer.SetVariable
-							-var-name
-							file
-			-tee
-				adams.flow.transformer.MovieImageSequence
-					-interval
-					100
-			-tee
-				adams.flow.transformer.SetStorageValue
-					-storage-name
-					frame
-			-tee
-				adams.flow.control.Tee
-					-name
-					get timestamp
-					-tee
-						adams.flow.transformer.GetReportValue
-							-field
-							Timestamp[S]
-					-tee
-						adams.flow.transformer.Convert
-							-conversion
-								adams.data.conversion.StringToDateTimeType
-									-format
-									yyyy-MM-dd HH:mm:ss.SSS
-									-datetime-type
-									MSECS
-					-tee
-						adams.flow.control.Tee
-							-name
-							short
-							-tee
-								adams.flow.transformer.Convert
-									-name
-									Convert-1
-									-conversion
-										adams.data.conversion.DateTimeTypeToString
-											-datetime-type
-											MSECS
-											-format
-											mm:ss.SSS
-							-tee
-								adams.flow.transformer.SetVariable
-									-var-name
-									timestamp
-					-tee
-						adams.flow.control.Tee
-							-name
-							full
-							-tee
-								adams.flow.transformer.Convert
-									-name
-									Convert-1
-									-conversion
-										adams.data.conversion.DateTimeTypeToString
-											-datetime-type
-											MSECS
-											-format
-											yyyy-MM-dd hh:mm:ss.SSS
-							-tee
-								adams.flow.transformer.SetVariable
-									-var-name
-									timestamp_long
-			-tee
-				adams.flow.control.Once
-					-name
-					select object
-					-tee
-						adams.flow.control.Inspect
-							-provider
-								adams.flow.sink.ImageViewer
-									-writer
-										adams.gui.print.NullWriter
-									-zoom
-									-1.0
-									-selection-processor
-										adams.gui.visualization.image.selection.SelectObjectToTrack
-									-selection-box-color
-									#ff0000
-									-image-overlay
-										adams.gui.visualization.image.QuadrilateralLocationsOverlayFromReport
-							-close-dialog
-							true
-					-tee
-						adams.flow.transformer.SetStorageValue
-							-storage-name
-							frame
-			-tee
-				adams.flow.control.Once
-					-name
-					create copy for map
-					-tee
-						adams.flow.transformer.Copy
-					-tee
-						adams.flow.transformer.SetStorageValue
-							-storage-name
-							map
-			-tee
-				adams.flow.control.Once
-					-name
-					create copy for background
-					-tee
-						adams.flow.transformer.Copy
-					-tee
-						adams.flow.transformer.SetStorageValue
-							-storage-name
-							background
-			-tee
-				adams.flow.control.Once
-					-name
-					create heatmap/trail
-					-tee
-						adams.flow.control.Tee
-							-name
-							width
-							-tee
-								adams.flow.transformer.ImageInfo
-							-tee
-								adams.flow.transformer.SetVariable
-									-name
-									SetVariable-1
-									-var-name
-									width
-							-tee
-								adams.flow.transformer.MathExpression
-									-expression
-									X / @{hm_factor}
-									-round-output
-									true
-							-tee
-								adams.flow.transformer.SetVariable
-									-var-name
-									hwidth
-					-tee
-						adams.flow.control.Tee
-							-name
-							height
-							-tee
-								adams.flow.transformer.ImageInfo
-									-type
-									HEIGHT
-							-tee
-								adams.flow.transformer.SetVariable
-									-name
-									SetVariable-1
-									-var-name
-									height
-							-tee
-								adams.flow.transformer.MathExpression
-									-expression
-									X / @{hm_factor}
-									-round-output
-									true
-							-tee
-								adams.flow.transformer.SetVariable
-									-var-name
-									hheight
-					-tee
-						adams.flow.control.Trigger
-							-name
-							new trail
-							-tee
-								adams.flow.source.NewTrail
-									-id
-									@{file}
-									-width
-									@{width}
-									-height
-									@{height}
-							-tee
-								adams.flow.transformer.AddTrailBackground
-									-background
-									background
-							-tee
-								adams.flow.transformer.SetStorageValue
-									-storage-name
-									trail
-			-tee
-				adams.flow.control.Trigger
-					-name
-					track
-					-tee
-						adams.flow.source.StorageValue
-							-storage-name
-							frame
-					-tee
-						adams.flow.transformer.TrackObjects
-							-algorithm
-								adams.flow.transformer.objecttracker.BoofCVCirculant
-					-tee
-						adams.flow.control.Branch
-							-branch
-								adams.flow.control.Sequence
-									-name
-									image
-									-actor
-										adams.flow.sink.CallableSink
-											-callable
-											Frame
-							-branch
-								adams.flow.control.Sequence
-									-name
-									location/center
-									-actor
-										adams.flow.transformer.GetReportValue
-											-field
-											Tracker.Current[S]
-									-actor
-										adams.flow.control.Tee
-											-name
-											determine center
-											-tee
-												adams.flow.transformer.Convert
-													-conversion
-														adams.data.conversion.MultiConversion
-															-conversion
-																adams.data.conversion.StringToQuadrilateralLocation
-															-conversion
-																adams.data.conversion.QuadrilateralLocationCenter
-															-conversion
-																adams.data.conversion.Point2DToString
-											-tee
-												adams.flow.transformer.StringSplit
-													-expression
-													 
-											-tee
-												adams.flow.control.Tee
-													-name
-													get x
-													-tee
-														adams.flow.transformer.GetArrayElement
-													-tee
-														adams.flow.transformer.Convert
-															-conversion
-																adams.data.conversion.MultiConversion
-																	-conversion
-																		adams.data.conversion.StringToDouble
-																	-conversion
-																		adams.data.conversion.DoubleToInt
-													-tee
-														adams.flow.transformer.SetVariable
-															-var-name
-															x
-													-tee
-														adams.flow.transformer.IncVariable
-															-annotation
-															0-based to 1-based
-															-var-name
-															x
-													-tee
-														adams.flow.control.Tee
-															-name
-															x for heatmap
-															-tee
-																adams.flow.transformer.MathExpression
-																	-expression
-																	X / @{hm_factor}
-																	-round-output
-																	true
-															-tee
-																adams.flow.transformer.SetVariable
-																	-var-name
-																	xh
-															-tee
-																adams.flow.transformer.IncVariable
-																	-annotation
-																	0-based to 1-based
-																	-var-name
-																	xh
-											-tee
-												adams.flow.control.Tee
-													-name
-													get y
-													-tee
-														adams.flow.transformer.GetArrayElement
-															-index
-															2
-													-tee
-														adams.flow.transformer.Convert
-															-conversion
-																adams.data.conversion.MultiConversion
-																	-conversion
-																		adams.data.conversion.StringToDouble
-																	-conversion
-																		adams.data.conversion.DoubleToInt
-													-tee
-														adams.flow.transformer.SetVariable
-															-var-name
-															y
-													-tee
-														adams.flow.transformer.IncVariable
-															-annotation
-															0-based to 1-based
-															-var-name
-															y
-													-tee
-														adams.flow.control.Tee
-															-name
-															y for heatmap
-															-tee
-																adams.flow.transformer.MathExpression
-																	-expression
-																	X / @{hm_factor}
-																	-round-output
-																	true
-															-tee
-																adams.flow.transformer.SetVariable
-																	-var-name
-																	yh
-															-tee
-																adams.flow.transformer.IncVariable
-																	-annotation
-																	0-based to 1-based
-																	-var-name
-																	yh
-									-actor
-										adams.flow.control.Trigger
-											-name
-											update trail
-											-tee
-												adams.flow.source.StorageValue
-													-storage-name
-													trail
-											-tee
-												adams.flow.transformer.AddTrailStep
-													-timestamp
-													@{timestamp_long}
-													-x
-													@{x}
-													-y
-													@{y}
-											-tee
-												adams.flow.transformer.SetStorageValue
-													-storage-name
-													trail
-	-actor
-		adams.flow.control.Trigger
-			-name
-			display/save trail
-			-tee
-				adams.flow.source.StorageValue
-					-storage-name
-					trail
-			-tee
-				adams.flow.control.Tee
-					-tee
-						adams.flow.sink.CallableSink
-							-callable
-							Trail
-			-tee
-				adams.flow.transformer.TrailFileWriter
-					-writer
-						adams.data.io.output.SimpleTrailWriter
-							-logging-level
-							FINE
-					-dir
-					${HOME}/temp/tracking_mice_rats
-					-file-name-generation
-					ID
-	-flow-execution-listener
-		adams.flow.execution.NullListener
-
+adams.flow.control.Flow -annotation "Let\\\'s the user select an initial object to be tracked." -flow-execution-listener adams.flow.execution.NullListener
+ adams.flow.standalone.CallableActors
+  adams.flow.sink.ImageViewer -name Frame -short-title true -writer adams.gui.print.NullWriter -zoom -1.0 -selection-processor adams.gui.visualization.image.selection.NullProcessor -image-overlay "adams.gui.visualization.image.QuadrilateralLocationsOverlayFromReport -regexp Tracker\\\\.Current"
+  adams.flow.source.StorageValue -name background -storage-name background
+  adams.flow.sink.TrailDisplay -name Trail -short-title true -x -3 -writer adams.gui.print.NullWriter -paintlet adams.gui.visualization.trail.paintlet.Circles
+ adams.flow.standalone.SetVariable -var-name hm_factor -var-value 16
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name "process video"
+  adams.flow.source.SelectFile -extension mp4
+  adams.flow.control.Tee -name "file name"
+   adams.flow.transformer.BaseName -remove-extensions true
+   adams.flow.transformer.SetVariable -var-name file
+  adams.flow.transformer.MovieImageSequence -interval 100
+  adams.flow.transformer.SetStorageValue -storage-name frame
+  adams.flow.control.Tee -name "get timestamp"
+   adams.flow.transformer.GetReportValue -field Timestamp[S]
+   adams.flow.transformer.Convert -conversion "adams.data.conversion.StringToDateTimeType -format \"yyyy-MM-dd HH:mm:ss.SSS\" -datetime-type MSECS"
+   adams.flow.control.Tee -name short
+    adams.flow.transformer.Convert -name Convert-1 -conversion "adams.data.conversion.DateTimeTypeToString -datetime-type MSECS -format mm:ss.SSS"
+    adams.flow.transformer.SetVariable -var-name timestamp
+   adams.flow.control.Tee -name full
+    adams.flow.transformer.Convert -name Convert-1 -conversion "adams.data.conversion.DateTimeTypeToString -datetime-type MSECS -format \"yyyy-MM-dd hh:mm:ss.SSS\""
+    adams.flow.transformer.SetVariable -var-name timestamp_long
+  adams.flow.control.Once -name "select object"
+   adams.flow.control.Inspect -provider "adams.flow.sink.ImageViewer -writer adams.gui.print.NullWriter -zoom -1.0 -selection-processor adams.gui.visualization.image.selection.SelectObjectToTrack -selection-box-color #ff0000 -image-overlay adams.gui.visualization.image.QuadrilateralLocationsOverlayFromReport" -close-dialog true
+   adams.flow.transformer.SetStorageValue -storage-name frame
+  adams.flow.control.Once -name "create copy for map"
+   adams.flow.transformer.Copy
+   adams.flow.transformer.SetStorageValue -storage-name map
+  adams.flow.control.Once -name "create copy for background"
+   adams.flow.transformer.Copy
+   adams.flow.transformer.SetStorageValue -storage-name background
+  adams.flow.control.Once -name "create heatmap/trail"
+   adams.flow.control.Tee -name width
+    adams.flow.transformer.ImageInfo
+    adams.flow.transformer.SetVariable -name SetVariable-1 -var-name width
+    adams.flow.transformer.MathExpression -expression "X / @{hm_factor}" -round-output true
+    adams.flow.transformer.SetVariable -var-name hwidth
+   adams.flow.control.Tee -name height
+    adams.flow.transformer.ImageInfo -type HEIGHT
+    adams.flow.transformer.SetVariable -name SetVariable-1 -var-name height
+    adams.flow.transformer.MathExpression -expression "X / @{hm_factor}" -round-output true
+    adams.flow.transformer.SetVariable -var-name hheight
+   adams.flow.control.Trigger -name "new trail"
+    adams.flow.source.NewTrail -id @{file} -width @{width} -height @{height}
+    adams.flow.transformer.AddTrailBackground -background background
+    adams.flow.transformer.SetStorageValue -storage-name trail
+  adams.flow.control.Trigger -name track
+   adams.flow.source.StorageValue -storage-name frame
+   adams.flow.transformer.TrackObjects -algorithm adams.flow.transformer.objecttracker.BoofCVCirculant
+   adams.flow.control.Branch
+    adams.flow.control.Sequence -name image
+     adams.flow.sink.CallableSink -callable Frame
+    adams.flow.control.Sequence -name location/center
+     adams.flow.transformer.GetReportValue -field Tracker.Current[S]
+     adams.flow.control.Tee -name "quadrilateral location"
+      adams.flow.transformer.StringInsert -position first -value location=
+      adams.flow.transformer.Convert -conversion adams.data.conversion.Quote
+      adams.flow.transformer.SetVariable -var-name current_quadloc
+     adams.flow.control.Tee -name "determine center"
+      adams.flow.transformer.Convert -conversion "adams.data.conversion.MultiConversion -conversion adams.data.conversion.StringToQuadrilateralLocation -conversion adams.data.conversion.QuadrilateralLocationCenter -conversion adams.data.conversion.Point2DToString"
+      adams.flow.transformer.StringSplit -expression " "
+      adams.flow.control.Tee -name "get x"
+       adams.flow.transformer.GetArrayElement
+       adams.flow.transformer.Convert -conversion "adams.data.conversion.MultiConversion -conversion adams.data.conversion.StringToDouble -conversion adams.data.conversion.DoubleToInt"
+       adams.flow.transformer.SetVariable -var-name x
+       adams.flow.transformer.IncVariable -annotation "0-based to 1-based" -var-name x
+       adams.flow.control.Tee -name "x for heatmap"
+        adams.flow.transformer.MathExpression -expression "X / @{hm_factor}" -round-output true
+        adams.flow.transformer.SetVariable -var-name xh
+        adams.flow.transformer.IncVariable -annotation "0-based to 1-based" -var-name xh
+      adams.flow.control.Tee -name "get y"
+       adams.flow.transformer.GetArrayElement -index 2
+       adams.flow.transformer.Convert -conversion "adams.data.conversion.MultiConversion -conversion adams.data.conversion.StringToDouble -conversion adams.data.conversion.DoubleToInt"
+       adams.flow.transformer.SetVariable -var-name y
+       adams.flow.transformer.IncVariable -annotation "0-based to 1-based" -var-name y
+       adams.flow.control.Tee -name "y for heatmap"
+        adams.flow.transformer.MathExpression -expression "X / @{hm_factor}" -round-output true
+        adams.flow.transformer.SetVariable -var-name yh
+        adams.flow.transformer.IncVariable -annotation "0-based to 1-based" -var-name yh
+     adams.flow.control.Trigger -name "update trail"
+      adams.flow.source.StorageValue -storage-name trail
+      adams.flow.transformer.AddTrailStep -timestamp @{timestamp_long} -x @{x} -y @{y} -meta-data @{current_quadloc}
+      adams.flow.transformer.SetStorageValue -storage-name trail
+ adams.flow.control.Trigger -name "display/save trail"
+  adams.flow.source.StorageValue -storage-name trail
+  adams.flow.control.Tee
+   adams.flow.sink.CallableSink -callable Trail
+  adams.flow.transformer.TrailFileWriter -writer "adams.data.io.output.SimpleTrailWriter -logging-level FINE" -dir ${HOME}/temp/tracking_mice_rats -file-name-generation ID
