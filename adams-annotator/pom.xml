@@ -5,7 +5,7 @@
 
   <parent>
     <groupId>nz.ac.waikato.cms.adams</groupId>
-    <artifactId>adams-applications-pom</artifactId>
+    <artifactId>adams-pom</artifactId>
     <version>0.4.13-SNAPSHOT</version>
   </parent>
 
@@ -72,13 +72,13 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-excel</artifactId>
-      <version>${adams.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-excel</artifactId>
-      <version>${adams.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
@@ -86,13 +86,13 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-odf</artifactId>
-      <version>${adams.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-odf</artifactId>
-      <version>${adams.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
@@ -100,13 +100,13 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-pdf</artifactId>
-      <version>${adams.version}</version>
+      <version>${project.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-pdf</artifactId>
-      <version>${adams.version}</version>
+      <version>${project.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>

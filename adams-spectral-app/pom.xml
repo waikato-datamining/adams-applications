@@ -5,7 +5,7 @@
 
   <parent>
     <groupId>nz.ac.waikato.cms.adams</groupId>
-    <artifactId>adams-applications-pom</artifactId>
+    <artifactId>adams-pom</artifactId>
     <version>0.4.13-SNAPSHOT</version>
   </parent>
 
@@ -47,6 +47,7 @@
     <class.adams.env>adams.env.Environment</class.adams.env>
     <class.adams.main>adams.gui.Main</class.adams.main>
     <adams.test.multiprocess.enabled>false</adams.test.multiprocess.enabled>
+    <adams.version>0.4.13-SNAPSHOT</adams.version>
     <adams-spectral.version>16.5.0-SNAPSHOT</adams-spectral.version>
   </properties>
 
