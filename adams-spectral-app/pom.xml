@@ -6,7 +6,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.adams</groupId>
     <artifactId>adams-pom</artifactId>
-    <version>16.6.0-SNAPSHOT</version>
+    <version>16.7.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>adams-spectral-app</artifactId>
@@ -46,8 +46,8 @@
     <class.adams.env>adams.env.Environment</class.adams.env>
     <class.adams.main>adams.gui.Main</class.adams.main>
     <adams.test.multiprocess.enabled>false</adams.test.multiprocess.enabled>
-    <adams.version>16.6.0-SNAPSHOT</adams.version>
-    <adams-spectral.version>16.6.0-SNAPSHOT</adams-spectral.version>
+    <adams.version>16.7.0-SNAPSHOT</adams.version>
+    <adams-spectral.version>16.7.0-SNAPSHOT</adams-spectral.version>
   </properties>
 
   <dependencies>
