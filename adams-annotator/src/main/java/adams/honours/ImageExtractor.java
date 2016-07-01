@@ -23,12 +23,17 @@ package adams.honours;
 import adams.core.base.BaseTimeMsec;
 import adams.core.io.PlaceholderFile;
 import adams.data.image.BufferedImageContainer;
+import adams.data.io.input.SimpleTrailReader;
 import adams.data.io.output.DefaultSimpleReportWriter;
+import adams.data.trail.Step;
+import adams.data.trail.Trail;
 import adams.env.Environment;
 import adams.flow.transformer.movieimagesampler.TimestampMovieSampler;
 
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Extract images given a list of timestamps
@@ -38,9 +43,10 @@ import java.io.File;
  */
 public class ImageExtractor {
 
-  private BaseTimeMsec[] 	m_Timestamps;
+  private static final int BATCH_SIZE = 300;
+  private BaseTimeMsec[] m_Timestamps;
   private TimestampMovieSampler m_Sampler;
-  private PlaceholderFile	m_CurrentFile;
+  private PlaceholderFile m_CurrentFile;
 
 
   public BaseTimeMsec[] getTimestamps() {
@@ -70,6 +76,7 @@ public class ImageExtractor {
 
   /**
    * Main method for running as standalone
+   *
    * @param args
    * @throws Exception
    */
@@ -77,33 +84,42 @@ public class ImageExtractor {
     Environment.setEnvironmentClass(Environment.class);
     ImageExtractor extractor = new ImageExtractor();
     extractor.setFile(new PlaceholderFile(args[0]));
-    BaseTimeMsec[] ts = new BaseTimeMsec[6];
-    for (int i = 0; i < ts.length / 2; i++) {
-      for (int j = 0; j < 2; j++) {
-	String time = "00:0" + i + ":" + j * 3 + "0.000";
-	ts[i*2+j] = new BaseTimeMsec(time);
-	System.out.println(ts[i*2+j]);
-	System.out.println(ts[i*2+j].dateValue());
-	System.out.println(ts[i*2+j].dateValue().getTime());
+    SimpleTrailReader trailReader = new SimpleTrailReader();
+    trailReader.setInput(new PlaceholderFile(args[1]));
+    String outputPath = args[2];
+    Trail t = trailReader.read().get(0);
+    List<Step> steps = t.toList();
+    List<BaseTimeMsec> ts = new ArrayList<>(steps.size());
+    BaseTimeMsec[] tsa = new BaseTimeMsec[BATCH_SIZE];
+    DefaultSimpleReportWriter reportWriter = new DefaultSimpleReportWriter();
+    for (Step s : steps) {
+      System.out.println(s);
+      ts.add(new BaseTimeMsec(s.getTimestamp()));
+    }
+    int index = 0;
+    // Because we might have too many images
+    while (!ts.isEmpty()) {
+      List<BaseTimeMsec> timeStampSubList = new ArrayList<>();
+      while(!ts.isEmpty() && timeStampSubList.size() < BATCH_SIZE) {
+	timeStampSubList.add(ts.get(0));
+	ts.remove(0);
+      }
+      extractor.setimestamps(timeStampSubList.toArray(tsa));
+      BufferedImageContainer[] images = extractor.extract();
+      try {
+
+	for (int k = 0 ; k < images.length; k++) {
+	  //System.out.println("Image " + images[i].getReport().getStringValue("Timestamp"));
+	  ImageIO.write(images[k].getImage(), "png", new File(outputPath + extractor.getFile().getName() +
+	    images[k].getReport().getStringValue("Timestamp") + "-" + index + ".png"));
+	  reportWriter.setOutput(new PlaceholderFile(outputPath + extractor.getFile().getName() +
+	    images[k].getReport().getStringValue("Timestamp") + "-" + index + ".report"));
+	  reportWriter.write(images[k].getReport());
+	  index++;
+	}
+      } catch (Exception e) {
+	System.out.println(e.toString());
       }
     }
-    extractor.setimestamps(ts);
-
-    BufferedImageContainer[] images = extractor.extract();
-    try {
-      DefaultSimpleReportWriter reportWriter = new DefaultSimpleReportWriter();
-      for (int i = 0; i < images.length; i++) {
-        System.out.println("Image " + images[i].getReport().getStringValue("Timestamp"));
-        ImageIO.write(images[i].getImage(), "png", new File("/home/sjb90/Pictures/testImage" +
-          images[i].getReport().getStringValue("Timestamp") + "-" + i + ".png"));
-	reportWriter.setOutput(new PlaceholderFile("/home/sjb90/Pictures/testImage" +
-          images[i].getReport().getStringValue("Timestamp") + "-" + i+ ".report"));
-	reportWriter.write(images[i].getReport());
-      }
-    }
-    catch (Exception e) {
-
-    }
-
   }
 }

@@ -49,35 +49,32 @@ public class Test {
     trackingTrail = tReader.read().get(0);
     tReader.setInput(new PlaceholderFile(args[1]));
     annotationTrail = tReader.read().get(0);
-    // Combine trail files
-    result.addAll(annotationTrail);
     // We need to find the closest matching timestamp
     List<Step> annotationList = annotationTrail.toList();
     StepComparator comp = new StepComparator();
     for(Step s : trackingTrail) {
       // Find the position this should fit in the annotationList
-      int index = -Collections.binarySearch( annotationList, s, comp);
+      int index = Collections.binarySearch( annotationList, s, comp);
+      if(index < 0)
+        index = -index;
       System.out.println(index);
       // next compare to the index and the index + 1
       // Check that index +1 is not out of bound
       int next = index + 1;
       if(next < annotationList.size()) {
 	// If it is not out of bounds then find out which is the closest timestamp
-	Step closest = getClosest(s, annotationList.get(index + 1), annotationList.get(index));
+	Step closest = getClosest(s, annotationList.get(index), annotationList.get(index + 1));
 	// then add the metadata to the tracking step
-
+	s.getMetaData().putAll(closest.getMetaData());
+	// and add it to the result trail
+	result.add(s);
       }
-
     }
     //result.addAll(annotationTrail);
     SimpleTrailWriter tWriter = new SimpleTrailWriter();
     // Write out the combined trails
     tWriter.setOutput(new PlaceholderFile(args[2]));
     tWriter.write(result);
-    for(Step s : result) {
-      //System.out.println(s.getTimestamp().toString());
-    }
-
   }
 
   private static Step getClosest(Step trackingStep, Step currentAnnotation, Step nextAnnotation ) {

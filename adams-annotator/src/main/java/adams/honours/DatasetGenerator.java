@@ -52,32 +52,40 @@ public class DatasetGenerator {
       throw new InvalidPathException(args[0], "Not a valid trail file.");
     }
 
-    // For each step in the trail we need to
+    SpreadSheet sheetFrom = trail.toSpreadSheet();
+    SpreadSheet sheetTo   = new DefaultSpreadSheet();
+    Row fromHeaderRow = sheetFrom.getHeaderRow();
+    Row toHeaderRow = sheetTo.getHeaderRow();
 
-    if(true)
-    	return;
-
-    SpreadSheet sheet = new DefaultSpreadSheet();
-    Row row;
-
-    // header
-    row = sheet.getHeaderRow();
-    row.addCell("file").setContentAsString("File");
-    row.addCell("x").setContentAsString("X");
-    row.addCell("y").setContentAsString("Y");
-    row.addCell("class").setContentAsString("Class");
-
-    // data
-    for (int i = 0; i < 100; i++){
-      row = sheet.addRow();
-      row.addCell("file").setContentAsString("blah" + i + ".jpg");
-      row.addCell("x").setContent(-i);
-      row.addCell("y").setContent(i);
-      row.addCell("class").setContentAsString(i % 3 == 0 ? "yes" : "no");
+    for(String key : fromHeaderRow.cellKeys()) {
+      toHeaderRow.addCell(key).setContentAsString(fromHeaderRow.getCell(key).getContent());
+    }
+    toHeaderRow.addCell("dist").setContentAsString("Distance");
+    for(Row r : sheetFrom.rows()) {
+      Row newRow = sheetTo.addRow();
+      for(String key : r.cellKeys()) {
+        newRow.addCell(key).setContent(r.getCell(key).getContent());
+      }
     }
 
-    System.out.println(sheet);
+
+
+    for (int i = 1; i < sheetFrom.getRowCount(); i++) {
+      // get the current row and the previous row
+      Row currentRow = sheetFrom.getRow(i);
+      Row previousRow = sheetFrom.getRow(i-1);
+      double x1 = Double.parseDouble(previousRow.getCell("X").getContent());
+      double y1 = Double.parseDouble(previousRow.getCell("Y").getContent());
+      double x2 = Double.parseDouble(currentRow.getCell("X").getContent());
+      double y2 = Double.parseDouble(currentRow.getCell("Y").getContent());
+      double distance = Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
+      Row destinationRow = sheetTo.getRow(i);
+      destinationRow.getCell("dist").setContent(distance);
+    }
+
+
+
     ArffSpreadSheetWriter writer = new ArffSpreadSheetWriter();
-    writer.write(sheet, "/tmp/out.arff");
+    writer.write(sheetTo, args[1]);
   }
 }
