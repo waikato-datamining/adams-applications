@@ -23,9 +23,8 @@ package adams.data.image.multiimageoperation;
 import adams.data.image.BufferedImageContainer;
 import adams.data.image.BufferedImageHelper;
 
-
 import java.awt.image.BufferedImage;
-
+import java.util.concurrent.TimeUnit;
 
 /**
  <!-- globalinfo-start -->
@@ -37,7 +36,7 @@ import java.awt.image.BufferedImage;
  * @author sjb90
  * @version $Revision$
  */
-public class Diff extends AbstractBufferedImageMultiImageOperation {
+public class Diff2 extends AbstractBufferedImageMultiImageOperation {
 
   /** the threshold at which two pixels are considered different */
   protected int m_Threshold;
@@ -138,6 +137,7 @@ public class Diff extends AbstractBufferedImageMultiImageOperation {
     result[0].setReport(images[0].getReport().getClone());
     result[0].getNotes().mergeWith(images[0].getNotes());
     result[0].setImage(output);
+
     return result;
   }
 

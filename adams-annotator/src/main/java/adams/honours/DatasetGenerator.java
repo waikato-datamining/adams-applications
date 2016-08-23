@@ -26,10 +26,8 @@ import adams.data.io.output.ArffSpreadSheetWriter;
 import adams.data.spreadsheet.DefaultSpreadSheet;
 import adams.data.spreadsheet.Row;
 import adams.data.spreadsheet.SpreadSheet;
-import adams.data.trail.Step;
 import adams.data.trail.Trail;
 import adams.env.Environment;
-import adams.flow.transformer.TrailFileReader;
 
 import java.nio.file.InvalidPathException;
 

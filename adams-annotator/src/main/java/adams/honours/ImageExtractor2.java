@@ -20,19 +20,24 @@
 
 package adams.honours;
 
+import adams.core.Utils;
 import adams.core.base.BaseTimeMsec;
 import adams.core.io.PlaceholderFile;
 import adams.data.image.BufferedImageContainer;
 import adams.data.io.input.SimpleTrailReader;
 import adams.data.io.output.DefaultSimpleReportWriter;
+import adams.data.report.DataType;
+import adams.data.report.Field;
+import adams.data.report.Report;
 import adams.data.trail.Step;
 import adams.data.trail.Trail;
 import adams.env.Environment;
-import adams.flow.transformer.movieimagesampler.TimestampMovieSampler;
+import adams.flow.transformer.movieimagesampler.SingleTimestampMovieSampler;
 
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -41,20 +46,20 @@ import java.util.List;
  * @author sjb90
  * @version $Revision$
  */
-public class ImageExtractor {
+public class ImageExtractor2 {
 
   private static final int BATCH_SIZE = 300;
-  private BaseTimeMsec[] m_Timestamps;
-  private TimestampMovieSampler m_Sampler;
+  private BaseTimeMsec m_Timestamp;
+  private SingleTimestampMovieSampler m_Sampler;
   private PlaceholderFile m_CurrentFile;
 
 
-  public BaseTimeMsec[] getTimestamps() {
-    return m_Timestamps;
+  public BaseTimeMsec getTimestamp() {
+    return m_Timestamp;
   }
 
-  public void setimestamps(BaseTimeMsec[] timestamps) {
-    m_Timestamps = timestamps;
+  public void setimestamp(BaseTimeMsec timestamp) {
+    m_Timestamp = timestamp;
   }
 
   public void setFile(PlaceholderFile file) {
@@ -65,12 +70,12 @@ public class ImageExtractor {
     return m_CurrentFile;
   }
 
-  public ImageExtractor() {
-    m_Sampler = new TimestampMovieSampler();
+  public ImageExtractor2() {
+    m_Sampler = new SingleTimestampMovieSampler();
   }
 
   public BufferedImageContainer[] extract() {
-    m_Sampler.setTimeStamps(m_Timestamps);
+    m_Sampler.setTimeStamp(m_Timestamp);
     return m_Sampler.sample(m_CurrentFile);
   }
 
@@ -82,7 +87,8 @@ public class ImageExtractor {
    */
   public static void main(String[] args) throws Exception {
     Environment.setEnvironmentClass(Environment.class);
-    ImageExtractor extractor = new ImageExtractor();
+    ImageExtractor2 extractor = new ImageExtractor2();
+
     extractor.setFile(new PlaceholderFile(args[0]));
     SimpleTrailReader trailReader = new SimpleTrailReader();
     trailReader.setInput(new PlaceholderFile(args[1]));
@@ -92,35 +98,52 @@ public class ImageExtractor {
     List<BaseTimeMsec> ts = new ArrayList<>(steps.size());
     BaseTimeMsec[] tsa = new BaseTimeMsec[BATCH_SIZE];
     DefaultSimpleReportWriter reportWriter = new DefaultSimpleReportWriter();
+
     for (Step s : steps) {
       System.out.println(s);
-      ts.add(new BaseTimeMsec(s.getTimestamp()));
-    }
-    int index = 0;
-    // Because we might have too many images
-    while (!ts.isEmpty()) {
-      List<BaseTimeMsec> timeStampSubList = new ArrayList<>();
-      while(!ts.isEmpty() && timeStampSubList.size() < BATCH_SIZE) {
-	timeStampSubList.add(ts.get(0));
-	ts.remove(0);
-      }
-      extractor.setimestamps(timeStampSubList.toArray(tsa));
+      extractor.setimestamp(new BaseTimeMsec(s.getTimestamp()));
       BufferedImageContainer[] images = extractor.extract();
       try {
+        int index = 0;
+	for (int k = 0 ; k < 1;/*images.length;*/ k++) {
+          Report report = images[0].getReport();
 
-	for (int k = 0 ; k < images.length; k++) {
-          System.out.println("Outputing Image");
-	  //System.out.println("Image " + images[i].getReport().getStringValue("Timestamp"));
-	  ImageIO.write(images[k].getImage(), "png", new File(outputPath + extractor.getFile().getName() +
-	    images[k].getReport().getStringValue("Timestamp") + "-" + index + ".png"));
+          // Add the annotation information to the report
+          HashMap<String, Object> metaData = s.getMetaData();
+          for(String metaKey : metaData.keySet()) {
+            Field field;
+            if (Utils.isBoolean("" + metaData.get(metaKey))) {
+              field = new Field(metaKey, DataType.BOOLEAN);
+              report.addField(field);
+              report.setValue(field, "" + metaData.get(metaKey));
+            }
+            else if (Utils.isDouble("" + metaData.get(metaKey))) {
+              field = new Field(metaKey, DataType.NUMERIC);
+              report.addField(field);
+              report.setValue(field, "" + metaData.get(metaKey));
+            }
+            else {
+              field = new Field(metaKey, DataType.STRING);
+              report.addField(field);
+              report.setValue(field, "" + metaData.get(metaKey));
+            }
+          }
+	  ImageIO.write(images[0].getImage(), "png", new File(outputPath + extractor.getFile().getName() +
+	    report.getStringValue("Timestamp") + "-" + index + ".png"));
 	  reportWriter.setOutput(new PlaceholderFile(outputPath + extractor.getFile().getName() +
-	    images[k].getReport().getStringValue("Timestamp") + "-" + index + ".report"));
-	  reportWriter.write(images[k].getReport());
+            report.getStringValue("Timestamp") + "-" + index + ".report"));
+	  reportWriter.write(report);
 	  index++;
 	}
       } catch (Exception e) {
 	System.out.println(e.toString());
       }
+
     }
+    extractor.cleanup();
+  }
+
+  private void cleanup() {
+    m_Sampler.cleanUp();
   }
 }
