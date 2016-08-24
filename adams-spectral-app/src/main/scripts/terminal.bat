@@ -1,3 +1,3 @@
 @echo off
 
-%~dp0\launcher.bat -main adams.terminal.Main -memory 2g -title "ADAMS Spectral"
+java -cp "%~dp0\..\lib\*" -Xmx2g adams.terminal.Main -title "ADAMS Spectral"
