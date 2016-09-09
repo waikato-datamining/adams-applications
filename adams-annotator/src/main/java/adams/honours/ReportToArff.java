@@ -20,9 +20,6 @@
 
 package adams.honours;
 
-import adams.core.base.BaseRegExp;
-import adams.core.io.DirectoryLister;
-import adams.core.io.PlaceholderDirectory;
 import adams.core.io.PlaceholderFile;
 import adams.data.io.input.AbstractReportReader;
 import adams.data.io.output.ArffSpreadSheetWriter;
