@@ -21,7 +21,10 @@
   </organization>
 
   <modules>
+    <module>adams-addons-all</module>
     <module>adams-annotator</module>
+    <module>adams-base-all</module>
+    <module>adams-incubator-all</module>
     <module>adams-ml-app</module>
     <module>adams-spectral-app</module>
   </modules>
