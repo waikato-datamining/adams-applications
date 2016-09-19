@@ -18,13 +18,13 @@
  * Copyright (C) 2016 University of Waikato, Hamilton, New Zealand
  */
 
-package adams.data.image.multiimageoperation;
+package adams.honours;
 
 import adams.data.image.BufferedImageContainer;
 import adams.data.image.BufferedImageHelper;
+import adams.data.image.multiimageoperation.AbstractBufferedImageMultiImageOperation;
 
 import java.awt.image.BufferedImage;
-import java.util.concurrent.TimeUnit;
 
 /**
  <!-- globalinfo-start -->
@@ -110,16 +110,12 @@ public class Diff2 extends AbstractBufferedImageMultiImageOperation {
     int				x;
     int				y;
     int				i;
-    int				n;
     int[][] 			channels;
-    int[]			val;
     int[]			split;
 
     result   = new BufferedImageContainer[1];
     output   = BufferedImageHelper.deepCopy(images[0].toBufferedImage());
     channels = new int[images.length][];
-    val      = new int[images.length];
-    split    = new int[4];
     // Walk through the pixels of the images
     for (y = 0; y < images[0].getHeight(); y++) {
       for (x = 0; x < images[0].getWidth(); x++) {

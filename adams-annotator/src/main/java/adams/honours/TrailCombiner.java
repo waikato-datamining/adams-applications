@@ -37,7 +37,7 @@ import java.util.List;
  * @author steven
  * @version $Revision$
  */
-public class Test {
+public class TrailCombiner {
   public static void main(String[] args) throws Exception {
     Environment.setEnvironmentClass(Environment.class);
     // read in trail files

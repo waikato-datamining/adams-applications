@@ -31,6 +31,8 @@ import adams.data.spreadsheet.Row;
 import adams.data.spreadsheet.SpreadSheet;
 import adams.env.Environment;
 import adams.flow.transformer.ReportFileReader;
+import org.openimaj.math.geometry.shape.Rectangle;
+import org.openimaj.math.geometry.shape.RotatedRectangle;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,9 +69,12 @@ public class ReportToArff {
         forEach(abstractField -> headerRow.addCell(abstractField.toString()).setContentAsString(abstractField.toString()));
     });
     headerRow.addCell("dist").setContentAsString("Distance");
+    headerRow.addCell("boundH").setContentAsString("Bound Height");
+    headerRow.addCell("boundW").setContentAsString("Bound Width");
+    headerRow.addCell("boundD").setContentAsString("Bound Diagonal");
 
     for(Report report : reports) {
-      if(report.getDoubleValue("Object.count") > 2)
+      if(report.getDoubleValue("Object.count") > 2 || report.getDoubleValue("Object.count") < 1)
 	continue;
       Row row = result.addRow();
       List<AbstractField> fields = report.getFields();
@@ -89,11 +94,11 @@ public class ReportToArff {
 	  case BOOLEAN:
 	    cell = row.addCell(f.toString());
 	    if(cell == null) {
-	      System.out.println(f.toString());
 	      System.out.println("cell is null");
 	      System.out.println(report.getStringValue("Timestamp"));
 	      continue;
 	    }
+            System.out.println(report.getBooleanValue(f));
 	    cell.setContent(report.getBooleanValue(f));
 	    break;
 	  default:
@@ -109,6 +114,12 @@ public class ReportToArff {
       }
       // Calculate distance. For this we need to make use of the number of objects and their coordinates
       row.addCell("dist").setContent(getDistance(report));
+      // Calculate the size of the bounding rectangle around both objects. Store width, height and diagonal of this box
+      Rectangle bound 	= getSuperBound(report);
+      Double	diag	= Math.hypot(bound.width, bound.height);
+      row.addCell("boundW").setContent(bound.width);
+      row.addCell("boundH").setContent(bound.height);
+      row.addCell("boundD").setContent(diag);
     }
     return result;
   }
@@ -138,6 +149,22 @@ public class ReportToArff {
       result = Math.sqrt(Math.pow(o2MX - o1MX, 2) + Math.pow(o2MY - o1MY,2));
     }
 
+    return result;
+  }
+
+  private static Rectangle getSuperBound(Report report) {
+    Rectangle result;
+    System.out.print(report);
+    Rectangle obj1 = new Rectangle(report.getDoubleValue("Object.1.x").floatValue(),report.getDoubleValue("Object.1.y").floatValue(),
+      report.getDoubleValue("Object.1.width").floatValue(),report.getDoubleValue("Object.1.height").floatValue());
+    if(report.getDoubleValue("Object.count") < 2) {
+      result = obj1;
+    }
+    else {
+      Rectangle obj2 = new Rectangle(report.getDoubleValue("Object.2.x").floatValue(), report.getDoubleValue("Object.2.y").floatValue(),
+        report.getDoubleValue("Object.2.width").floatValue(), report.getDoubleValue("Object.2.height").floatValue());
+      result = obj1.union(obj2);
+    }
     return result;
   }
 
