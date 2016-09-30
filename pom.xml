@@ -6,7 +6,7 @@
   <parent>
     <groupId>nz.ac.waikato.cms.adams</groupId>
     <artifactId>adams-pom</artifactId>
-    <version>16.9.0-SNAPSHOT</version>
+    <version>16.10.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>adams-applications-pom</artifactId>
@@ -30,7 +30,7 @@
   </modules>
 
   <properties>
-    <adams.version>16.9.0-SNAPSHOT</adams.version>
+    <adams.version>16.10.0-SNAPSHOT</adams.version>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
   </properties>
