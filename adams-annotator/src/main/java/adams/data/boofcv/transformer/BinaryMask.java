@@ -126,7 +126,6 @@ public class BinaryMask extends AbstractBoofCVTransformer {
 
     for (int y = 0; y < img.getHeight(); y++) {
       for (int x = 0; x < img.getWidth(); x++) {
-	System.out.println("Pixel: " + maskImg.get(x,y));
 	if(maskImg.get(x,y) == maskColour) {
 	  image.setRGB(x,y,0x00FFFFFF);
 	}

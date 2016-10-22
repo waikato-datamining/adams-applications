@@ -50,12 +50,20 @@ public class ReportToArff {
 
   public static void main(String[] args) throws Exception {
     Environment.setEnvironmentClass(Environment.class);
-
     ArffSpreadSheetWriter writer = new ArffSpreadSheetWriter();
-    List<Report> reports = getReports(args[0]);
-    SpreadSheet ss = toSpreadSheet(reports);
-    writer.write(ss, args[1]);
+    Files.list(Paths.get(args[0])).forEach(filepath -> {
+      List<Report> reports = null;
+      try {
+        reports = getReports(filepath.toString());
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      SpreadSheet ss = toSpreadSheet(reports);
+      ss.setName(filepath.getName(filepath.getNameCount() - 1).toString());
+      writer.write(ss, args[1] + filepath.getName(filepath.getNameCount() -1) + ".arff");
+    });
   }
+
 
   private static SpreadSheet toSpreadSheet(List<Report> reports) {
     // Create a spreadsheet
@@ -72,6 +80,8 @@ public class ReportToArff {
     headerRow.addCell("boundH").setContentAsString("Bound Height");
     headerRow.addCell("boundW").setContentAsString("Bound Width");
     headerRow.addCell("boundD").setContentAsString("Bound Diagonal");
+    headerRow.removeCell("Social");
+    headerRow.addCell("Social").setContentAsString("Social");
 
     for(Report report : reports) {
       if(report.getDoubleValue("Object.count") > 2 || report.getDoubleValue("Object.count") < 1)
