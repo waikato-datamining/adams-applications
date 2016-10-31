@@ -209,22 +209,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <!-- get all flow jars (override, unpack to different directory) -->
-          <execution>
-            <id>flows</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>unpack-dependencies</goal>
-            </goals>
-            <configuration>
-              <classifier>flows</classifier>
-              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
-              <outputDirectory>${project.build.directory}/flows-dependencies</outputDirectory>
-              <includeGroupIds>${project.groupId}</includeGroupIds>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
 
       <plugin>
