@@ -66,13 +66,13 @@
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-spectral-core</artifactId>
+      <artifactId>adams-spectral-2dim</artifactId>
       <version>${adams-spectral.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-spectral-core</artifactId>
+      <artifactId>adams-spectral-2dim</artifactId>
       <version>${adams-spectral.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
