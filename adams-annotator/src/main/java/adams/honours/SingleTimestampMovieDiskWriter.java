@@ -23,7 +23,6 @@ package adams.honours;
 import adams.core.base.BaseTimeMsec;
 import adams.core.io.PlaceholderFile;
 import adams.data.image.BufferedImageContainer;
-import adams.data.image.BufferedImageHelper;
 import adams.data.io.input.SimpleTrailReader;
 import adams.data.io.output.DefaultSimpleReportWriter;
 import adams.data.report.DataType;
@@ -44,11 +43,9 @@ import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallbackAdapter;
 import uk.co.caprica.vlcj.player.direct.format.RV32BufferFormat;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -302,15 +299,6 @@ public class SingleTimestampMovieDiskWriter extends AbstractBufferedImageMovieIm
       Report report = m_CurrentImage.getReport();
       report.setValue(new Field("Timestamp", DataType.STRING), ts);
       if (currentTime == m_TargetTime) {
-	try {
-	  ImageIO.write(m_Image, "png", new File("/home/sjb90/Desktop/Datasets/Raw Outputs/test/" +
-	    report.getStringValue("Timestamp") + "-" + ".png"));
-	  reportWriter.setOutput(new PlaceholderFile("/home/sjb90/Desktop/Datasets/Raw Outputs/test/" +
-	    report.getStringValue("Timestamp") + "-" + ".report"));
-	  reportWriter.write(report);
-	} catch (IOException e) {
-	  e.printStackTrace();
-	}
 	count++;
         System.out.println("CurrentTime: " + currentTime + " Target Time: " + m_TargetTime);
       }
