@@ -21,3 +21,4 @@
 
 # the location of the example flows
 EXAMPLE_FLOWS=%c/flows
+FLOWS=%c/flows
