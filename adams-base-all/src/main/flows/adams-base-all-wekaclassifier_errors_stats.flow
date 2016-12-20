@@ -21,7 +21,7 @@ adams.flow.control.Flow
 	-actor
 		adams.flow.source.FileSupplier
 			-file
-			${EXAMPLE_FLOWS}/data/bodyfat.arff
+			${FLOWS}/data/bodyfat.arff
 	-actor
 		adams.flow.transformer.WekaFileReader
 			-loader

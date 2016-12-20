@@ -11,7 +11,7 @@ adams.flow.control.Flow
 			-output-array
 			true
 			-dir
-			${EXAMPLE_FLOWS}/data
+			${FLOWS}/data
 			-list-files
 			true
 			-regexp
@@ -19,7 +19,7 @@ adams.flow.control.Flow
 	-actor
 		adams.flow.transformer.WekaExperiment
 			-file
-			${EXAMPLE_FLOWS}/data/adams-base-all-wekaexperiment.xml
+			${FLOWS}/data/adams-base-all-wekaexperiment.xml
 	-actor
 		adams.flow.transformer.WekaExperimentEvaluation
 			-tester

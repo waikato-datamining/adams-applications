@@ -117,7 +117,7 @@ adams.flow.control.Flow
 	-actor
 		adams.flow.source.FileSupplier
 			-file
-			${EXAMPLE_FLOWS}/data/triazines.arff
+			${FLOWS}/data/triazines.arff
 	-actor
 		adams.flow.transformer.WekaFileReader
 			-loader

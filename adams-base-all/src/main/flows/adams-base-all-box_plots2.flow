@@ -3,7 +3,7 @@
 # User: fracpete
 # Charset: UTF-8
 adams.flow.control.Flow -annotation "The flow loads the UCI dataset \\\"iris\\\" and displays all the numeric \\nattributes in box plots, side by side, with the same axis for\\nbetter comparison. Non-numeric attributes get removed by\\nthe inverted RemoveType filter." -flow-execution-listener adams.flow.execution.NullListener
- adams.flow.source.FileSupplier -file ${EXAMPLE_FLOWS}/data/iris.arff
+ adams.flow.source.FileSupplier -file ${FLOWS}/data/iris.arff
  adams.flow.transformer.WekaFileReader -loader weka.core.converters.ArffLoader
  adams.flow.transformer.WekaFilter -filter "weka.filters.unsupervised.attribute.RemoveType -V -T numeric"
  adams.flow.transformer.Convert -conversion "adams.data.conversion.WekaInstancesToSpreadSheet -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet"

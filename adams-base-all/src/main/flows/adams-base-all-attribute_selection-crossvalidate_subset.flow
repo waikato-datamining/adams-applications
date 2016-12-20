@@ -21,7 +21,7 @@ adams.flow.control.Flow
 			-tee
 				adams.flow.source.FileSupplier
 					-file
-					${EXAMPLE_FLOWS}/data/anneal.arff
+					${FLOWS}/data/anneal.arff
 			-tee
 				adams.flow.transformer.WekaFileReader
 					-loader

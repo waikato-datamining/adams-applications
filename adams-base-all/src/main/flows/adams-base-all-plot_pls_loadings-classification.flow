@@ -69,7 +69,7 @@ adams.flow.control.Flow
 	-actor
 		adams.flow.source.FileSupplier
 			-file
-			${EXAMPLE_FLOWS}/data/waveform-5000.arff
+			${FLOWS}/data/waveform-5000.arff
 	-actor
 		adams.flow.transformer.WekaFileReader
 			-loader

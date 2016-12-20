@@ -51,7 +51,7 @@ adams.flow.control.Flow
 							-tee
 								adams.flow.source.FileSupplier
 									-file
-									${EXAMPLE_FLOWS}/data/USNationalWeatherService-20130718-1050.xml
+									${FLOWS}/data/USNationalWeatherService-20130718-1050.xml
 							-tee
 								adams.flow.transformer.TextFileReader
 									-reader
@@ -97,7 +97,7 @@ adams.flow.control.Flow
 			-tee
 				adams.flow.transformer.XSLT
 					-stylesheet
-					${EXAMPLE_FLOWS}/data/USNationalWeatherService.xsl
+					${FLOWS}/data/USNationalWeatherService.xsl
 			-tee
 				adams.flow.transformer.Convert
 					-name

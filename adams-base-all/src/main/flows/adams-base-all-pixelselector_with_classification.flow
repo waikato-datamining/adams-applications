@@ -59,7 +59,7 @@ adams.flow.control.Flow
 			-tee
 				adams.flow.source.FileSupplier
 					-file
-					${EXAMPLE_FLOWS}/data/4825046958_787c97bc96.jpg
+					${FLOWS}/data/4825046958_787c97bc96.jpg
 			-tee
 				adams.flow.transformer.ImageReader
 					-reader
@@ -181,7 +181,7 @@ adams.flow.control.Flow
 			-tee
 				adams.flow.transformer.WekaInstanceDumper
 					-prefix
-					${EXAMPLE_FLOWS}/output/pixelselector
+					${FLOWS}/output/pixelselector
 			-tee
 				adams.flow.transformer.SetVariable
 					-var-name
@@ -257,7 +257,7 @@ adams.flow.control.Flow
 					-branch
 						adams.flow.sink.WekaModelWriter
 							-output
-							${EXAMPLE_FLOWS}/output/pixelselector.model
+							${FLOWS}/output/pixelselector.model
 					-branch
 						adams.flow.control.Sequence
 							-actor
