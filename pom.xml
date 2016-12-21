@@ -11,7 +11,7 @@
 
   <artifactId>adams-applications-pom</artifactId>
   <packaging>pom</packaging>
-  <version>16.12.0-SNAPSHOT</version>
+  <version>16.12.0</version>
 
   <name>adams-applications-pom</name>
   <description>The project object model for all custom ADAMS applications modules.</description>
@@ -37,9 +37,9 @@
   </properties>
 
   <scm>
-    <connection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</connection>
-    <developerConnection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</developerConnection>
-    <url>https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</url>
+    <connection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/tags/adams-applications-pom-16.12.0</connection>
+    <developerConnection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/tags/adams-applications-pom-16.12.0</developerConnection>
+    <url>https://svn.cms.waikato.ac.nz/svn/adams/applications/tags/adams-applications-pom-16.12.0</url>
   </scm>
 
   <build>
