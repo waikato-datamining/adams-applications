@@ -30,7 +30,7 @@
   </modules>
 
   <properties>
-    <adams.version>16.12.0-SNAPSHOT</adams.version>
+    <adams.version>16.12.0</adams.version>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
   </properties>
