@@ -200,7 +200,6 @@
               <attach>false</attach>
               <descriptors>
                 <descriptor>src/main/assembly/bin.xml</descriptor>
-                <descriptor>src/main/assembly/doc.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
