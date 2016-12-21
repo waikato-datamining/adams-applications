@@ -46,8 +46,6 @@
     <class.adams.env>adams.env.Environment</class.adams.env>
     <class.adams.main>adams.gui.Main</class.adams.main>
     <adams.test.multiprocess.enabled>false</adams.test.multiprocess.enabled>
-    <adams.version>16.12.0-SNAPSHOT</adams.version>
-    <adams-spectral.version>16.12.0-SNAPSHOT</adams-spectral.version>
   </properties>
 
   <dependencies>
@@ -67,13 +65,13 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-spectral-2dim</artifactId>
-      <version>${adams-spectral.version}</version>
+      <version>${adams.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-spectral-2dim</artifactId>
-      <version>${adams-spectral.version}</version>
+      <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
     </dependency>
