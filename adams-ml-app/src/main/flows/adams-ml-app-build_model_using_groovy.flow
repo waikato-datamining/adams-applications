@@ -5,13 +5,8 @@
 adams.flow.control.Flow -annotation "Builds a simple model on the iris UCI dataset.\\nThe model is configured using a Groovy script." -flow-execution-listener adams.flow.execution.NullListener
  adams.flow.standalone.CallableActors
   adams.flow.source.DL4JModelConfigurator -model-configurator "adams.ml.dl4j.model.ModelWithScriptedConfiguration -script ${FLOWS}/scripts/SimpleDl4jModel.groovy -handler adams.core.scripting.GroovyHandler"
-  adams.flow.sink.HistoryDisplay -entry-name-variable name
  adams.flow.source.DL4JDatasetIterator -iterator "adams.ml.dl4j.datasetiterator.RecordReaderDataSetIteratorConfigurator -record-reader \"adams.ml.dl4j.recordreader.CSVRecordReaderConfigurator -input-split \\\"adams.ml.dl4j.inputsplit.SingleFileSplitConfigurator -source ${FLOWS}/data/iris_numeric.csv\\\" -skip-num-lines 1\" -batch-size 150 -label-index 4 -num-possible-labels 3" -preprocessor "adams.ml.dl4j.datasetpreprocessor.DataSetPreProcessorWithScriptedConfiguration -handler adams.core.scripting.Dummy" -normalize-zero-mean-zero-unit-variance true
  adams.flow.transformer.DL4JTrainModel
- adams.flow.control.ContainerValuePicker -value Model
-  adams.flow.transformer.Convert -conversion adams.data.conversion.DL4JModelToYaml
-  adams.flow.transformer.SetVariable -var-name name -var-value model
-  adams.flow.sink.CallableSink -callable HistoryDisplay
- adams.flow.control.ContainerValuePicker -name ContainerValuePicker-1 -value Dataset
-  adams.flow.transformer.SetVariable -var-name name -var-value dataset
-  adams.flow.sink.CallableSink -callable HistoryDisplay
+ adams.flow.control.ContainerValuePicker -value Model -switch-outputs true
+ adams.flow.transformer.Convert -conversion adams.data.conversion.DL4JModelToYaml
+ adams.flow.sink.Display -writer adams.data.io.output.NullWriter
