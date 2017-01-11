@@ -41,7 +41,7 @@ class SimpleDl4jModel
         int seed = getAdditionalOptions().getInteger("seed", 1)
         int numIterations = getAdditionalOptions().getInteger("iterations", 1000)
         float learningRate = getAdditionalOptions().getDouble("learningrate", 1e-6).floatValue()
-        OptimizationAlgorithm optimization = OptimizationAlgorithm.valueOf(getAdditionalOptions().getString("optiimization", OptimizationAlgorithm.CONJUGATE_GRADIENT.toString()))
+        OptimizationAlgorithm optimization = OptimizationAlgorithm.valueOf(getAdditionalOptions().getString("optimization", OptimizationAlgorithm.CONJUGATE_GRADIENT.toString()))
         double l1 = getAdditionalOptions().getDouble("l1", 1e-1)
         boolean useRegularization = getAdditionalOptions().getBoolean("regularization", true)
         double l2 = getAdditionalOptions().getDouble("l2", 2e-4)

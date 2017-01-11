@@ -47,7 +47,7 @@ class SimpleDl4jModel(AbstractModelConfiguratorScript):
         seed = self.getAdditionalOptions().getInteger("seed", 1)
         numIterations = self.getAdditionalOptions().getInteger("iterations", 1000)
         learningRate = self.getAdditionalOptions().getDouble("learningrate", 1e-6)
-        optimization = OptimizationAlgorithm.valueOf(self.getAdditionalOptions().getString("optiimization", OptimizationAlgorithm.CONJUGATE_GRADIENT.toString()))
+        optimization = OptimizationAlgorithm.valueOf(self.getAdditionalOptions().getString("optimization", OptimizationAlgorithm.CONJUGATE_GRADIENT.toString()))
         l1 = self.getAdditionalOptions().getDouble("l1", 1e-1)
         useRegularization = self.getAdditionalOptions().getBoolean("regularization", True)
         l2 = self.getAdditionalOptions().getDouble("l2", 2e-4)
