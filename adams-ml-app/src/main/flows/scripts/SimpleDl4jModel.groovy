@@ -5,16 +5,16 @@
  * @version $Revision: 6612 $
  */
 
+
 import adams.ml.dl4j.model.AbstractModelConfiguratorScript
 import org.deeplearning4j.nn.api.Model
-import org.deeplearning4j.nn.api.OptimizationAlgorithm
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration
-import org.deeplearning4j.nn.conf.Updater
+import org.deeplearning4j.nn.conf.layers.DenseLayer
 import org.deeplearning4j.nn.conf.layers.OutputLayer
-import org.deeplearning4j.nn.conf.layers.RBM
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit
+import org.nd4j.linalg.activations.Activation
 import org.nd4j.linalg.lossfunctions.LossFunctions
 
 class SimpleDl4jModel
@@ -38,53 +38,44 @@ class SimpleDl4jModel
      */
     public Model configureModel(int numInput, int numOutput) {
         // get parameters
-        int seed = getAdditionalOptions().getInteger("seed", 1)
+        int seed = getAdditionalOptions().getInteger("seed", 6)
         int numIterations = getAdditionalOptions().getInteger("iterations", 1000)
-        float learningRate = getAdditionalOptions().getDouble("learningrate", 1e-6).floatValue()
-        OptimizationAlgorithm optimization = OptimizationAlgorithm.valueOf(getAdditionalOptions().getString("optimization", OptimizationAlgorithm.CONJUGATE_GRADIENT.toString()))
-        double l1 = getAdditionalOptions().getDouble("l1", 1e-1)
+        float learningRate = getAdditionalOptions().getDouble("learningrate", 0.1).floatValue()
         boolean useRegularization = getAdditionalOptions().getBoolean("regularization", true)
-        double l2 = getAdditionalOptions().getDouble("l2", 2e-4)
-        boolean useDropConnect = getAdditionalOptions().getBoolean("dropconnect", true)
+        double l2 = getAdditionalOptions().getDouble("l2", 1e-4)
         int hiddenNodes = getAdditionalOptions().getInteger("hiddennodes", 3)
-        WeightInit hiddenWeightInit = WeightInit.valueOf(getAdditionalOptions().getString("hiddenweightinit", WeightInit.XAVIER.toString()))
-        String hiddenActivation = getAdditionalOptions().getString("hiddenactivation", "relu")
-        LossFunctions.LossFunction hiddenLossFunction = LossFunctions.LossFunction.valueOf(getAdditionalOptions().getString("hiddenlossfunction", LossFunctions.LossFunction.RMSE_XENT.toString()))
-        Updater hiddenUpdater = Updater.valueOf(getAdditionalOptions().getString("hiddenupdater", Updater.ADAGRAD.toString()))
-        double hiddenDropOut = getAdditionalOptions().getDouble("hiddendropout", 0.5)
         LossFunctions.LossFunction outputLossFunction = LossFunctions.LossFunction.valueOf(getAdditionalOptions().getString("outputlossfunction", LossFunctions.LossFunction.MCXENT.toString()))
-        String outputActivation = getAdditionalOptions().getString("outputactivation", "softmax")
+        Activation activation = Activation.valueOf(getAdditionalOptions().getString("activation", Activation.TANH.toString()));
+        Activation outputActivation = Activation.valueOf(getAdditionalOptions().getString("outputactivation", Activation.SOFTMAX.toString()));
+        WeightInit weightInit = WeightInit.valueOf(getAdditionalOptions().getString("weightinit", WeightInit.XAVIER.toString()));
 
         // configure network
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-                .seed(seed) // Locks in weight initialization for tuning
-                .iterations(numIterations) // # training iterations predict/classify & backprop
-                .learningRate(learningRate) // Optimization step size
-                .optimizationAlgo(optimization) // Backprop to calculate gradients
-                .l1(l1)
+                .seed(seed)
+                .iterations(numIterations)
+                .activation(activation)
+                .weightInit(weightInit)
+                .learningRate(learningRate)
                 .regularization(useRegularization)
                 .l2(l2)
-                .useDropConnect(useDropConnect)
                 .list()
-                .layer(0, new RBM.Builder(RBM.HiddenUnit.RECTIFIED, RBM.VisibleUnit.GAUSSIAN)
-                    .nIn(numInput) // # input nodes
-                    .nOut(hiddenNodes) // # fully connected hidden layer nodes. Add list if multiple layers.
-                    .weightInit(hiddenWeightInit) // Weight initialization
-                    .k(1) // # contrastive divergence iterations
-                    .activation(hiddenActivation) // Activation function type
-                    .lossFunction(hiddenLossFunction) // Loss function type
-                    .updater(hiddenUpdater)
-                    .dropOut(hiddenDropOut)
-                    .build()
-                ) // NN layer type
-                .layer(1, new OutputLayer.Builder(outputLossFunction)
-                    .nIn(hiddenNodes) // # input nodes
-                    .nOut(numOutput) // # output nodes
-                    .activation(outputActivation)
-                    .build()
-                ) // NN layer type
-                .build();
+                .layer(0, new DenseLayer.Builder()
+                    .nIn(numInput)
+                    .nOut(hiddenNodes)
+                    .build())
+                .layer(1, new DenseLayer.Builder()
+                    .nIn(hiddenNodes)
+                    .nOut(hiddenNodes)
+                    .build())
+                .layer(2, new OutputLayer.Builder(outputLossFunction)
+                .activation(outputActivation)
+                    .nIn(hiddenNodes)
+                    .nOut(numOutput)
+                    .build())
+                .backprop(true)
+                .pretrain(false)
+                .build()
 
-        return new MultiLayerNetwork(conf);
+        return new MultiLayerNetwork(conf)
     }
 }

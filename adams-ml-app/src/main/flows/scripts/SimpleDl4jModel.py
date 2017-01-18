@@ -1,14 +1,12 @@
 import adams.ml.dl4j.model.AbstractModelConfiguratorScript as AbstractModelConfiguratorScript 
-import org.deeplearning4j.nn.api.Model as Model
-import org.deeplearning4j.nn.api.OptimizationAlgorithm as OptimizationAlgorithm
-import org.deeplearning4j.nn.conf.MultiLayerConfiguration as MultiLayerConfiguration
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration as NeuralNetConfiguration
-import org.deeplearning4j.nn.conf.Updater as Updater
 import org.deeplearning4j.nn.conf.layers.OutputLayer as OutputLayer
 import org.deeplearning4j.nn.conf.layers.RBM as RBM
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork as MultiLayerNetwork
 import org.deeplearning4j.nn.weights.WeightInit as WeightInit
 import org.nd4j.linalg.lossfunctions.LossFunctions as LossFunctions
+import org.nd4j.linalg.activations.Activation as Activation
+import org.deeplearning4j.nn.conf.layers.DenseLayer as DenseLayer
 
 class SimpleDl4jModel(AbstractModelConfiguratorScript):
     """
@@ -44,51 +42,42 @@ class SimpleDl4jModel(AbstractModelConfiguratorScript):
         """
         
         # get parameters
-        seed = self.getAdditionalOptions().getInteger("seed", 1)
+        seed = self.getAdditionalOptions().getInteger("seed", 6)
         numIterations = self.getAdditionalOptions().getInteger("iterations", 1000)
-        learningRate = self.getAdditionalOptions().getDouble("learningrate", 1e-6)
-        optimization = OptimizationAlgorithm.valueOf(self.getAdditionalOptions().getString("optimization", OptimizationAlgorithm.CONJUGATE_GRADIENT.toString()))
-        l1 = self.getAdditionalOptions().getDouble("l1", 1e-1)
+        learningRate = self.getAdditionalOptions().getDouble("learningrate", 0.1)
         useRegularization = self.getAdditionalOptions().getBoolean("regularization", True)
-        l2 = self.getAdditionalOptions().getDouble("l2", 2e-4)
-        useDropConnect = self.getAdditionalOptions().getBoolean("dropconnect", True)
+        l2 = self.getAdditionalOptions().getDouble("l2", 1e-4)
         hiddenNodes = self.getAdditionalOptions().getInteger("hiddennodes", 3)
-        hiddenWeightInit = WeightInit.valueOf(self.getAdditionalOptions().getString("hiddenweightinit", WeightInit.XAVIER.toString()))
-        hiddenActivation = self.getAdditionalOptions().getString("hiddenactivation", "relu")
-        hiddenLossFunction = LossFunctions.LossFunction.valueOf(self.getAdditionalOptions().getString("hiddenlossfunction", LossFunctions.LossFunction.RMSE_XENT.toString()))
-        hiddenUpdater = Updater.valueOf(self.getAdditionalOptions().getString("hiddenupdater", Updater.ADAGRAD.toString()))
-        hiddenDropOut = self.getAdditionalOptions().getDouble("hiddendropout", 0.5)
         outputLossFunction = LossFunctions.LossFunction.valueOf(self.getAdditionalOptions().getString("outputlossfunction", LossFunctions.LossFunction.MCXENT.toString()))
-        outputActivation = self.getAdditionalOptions().getString("outputactivation", "softmax")
+        activation = Activation.valueOf(self.getAdditionalOptions().getString("activation", Activation.TANH.toString()));
+        outputActivation = Activation.valueOf(self.getAdditionalOptions().getString("outputactivation", Activation.SOFTMAX.toString()));
+        weightInit = WeightInit.valueOf(self.getAdditionalOptions().getString("weightinit", WeightInit.XAVIER.toString()));
 
         # configure network
         conf = NeuralNetConfiguration.Builder() \
-            .seed(seed) \
-            .iterations(numIterations) \
+                .seed(seed) \
+                .iterations(numIterations) \
+                .activation(activation) \
+                .weightInit(weightInit) \
                 .learningRate(learningRate) \
-                .optimizationAlgo(optimization) \
-                .l1(l1) \
                 .regularization(useRegularization) \
                 .l2(l2) \
-                .useDropConnect(useDropConnect) \
                 .list() \
-                .layer(0, RBM.Builder(RBM.HiddenUnit.RECTIFIED, RBM.VisibleUnit.GAUSSIAN) \
+                .layer(0, DenseLayer.Builder() \
                     .nIn(numInput) \
                     .nOut(hiddenNodes) \
-                    .weightInit(hiddenWeightInit) \
-                    .k(1) \
-                    .activation(hiddenActivation) \
-                    .lossFunction(hiddenLossFunction) \
-                    .updater(hiddenUpdater) \
-                    .dropOut(hiddenDropOut) \
-                    .build()
-                ) \
-                .layer(1, OutputLayer.Builder(outputLossFunction) \
+                    .build()) \
+                .layer(1, DenseLayer.Builder() \
+                    .nIn(hiddenNodes) \
+                    .nOut(hiddenNodes) \
+                    .build()) \
+                .layer(2, OutputLayer.Builder(outputLossFunction) \
+                .activation(outputActivation) \
                     .nIn(hiddenNodes) \
                     .nOut(numOutput) \
-                    .activation(outputActivation) \
-                    .build()
-                ) \
+                    .build()) \
+                .backprop(True) \
+                .pretrain(False) \
                 .build()
 
         return MultiLayerNetwork(conf)
