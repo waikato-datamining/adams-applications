@@ -1,0 +1,12 @@
+# Project: adams
+# Date: 2017-01-19 11:48:36
+# User: fracpete
+# Charset: UTF-8
+adams.flow.control.Flow -annotation "Cross-validates a simple model on the iris UCI dataset (in ARFF format).\\nThe model is configured using a Groovy script." -flow-execution-listener adams.flow.execution.NullListener
+ adams.flow.standalone.CallableActors
+  adams.flow.source.DL4JModelConfigurator -model-configurator adams.ml.dl4j.model.SimpleMultiLayerNetwork
+ adams.flow.source.DL4JDatasetIterator -iterator "adams.ml.dl4j.datasetiterator.RecordReaderDataSetIteratorConfigurator -record-reader \"adams.ml.dl4j.recordreader.SpreadSheetRecordReaderConfigurator -input-split \\\"adams.ml.dl4j.inputsplit.SingleFileSplitConfigurator -source ${FLOWS}/data/iris.arff\\\" -reader \\\"adams.data.io.input.ArffSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet\\\" -conversion \\\"adams.data.conversion.SpreadSheetToNumeric -missing-value NaN -unhandled NaN\\\"\" -label-index 4 -num-possible-labels 3" -preprocessor "adams.ml.dl4j.datasetpreprocessor.DataSetPreProcessorWithScriptedConfiguration -handler adams.core.scripting.Dummy" -full-dataset true
+ adams.flow.transformer.DL4JCrossValidationEvaluator -always-use-container true
+ adams.flow.control.ContainerValuePicker -value Evaluation -switch-outputs true
+ adams.flow.transformer.DL4JEvaluationSummary -confusion-matrix true
+ adams.flow.sink.Display -name Summary -short-title true -writer adams.data.io.output.NullWriter
