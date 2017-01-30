@@ -25,7 +25,7 @@ import adams.data.boofcv.BoofCVImageContainer;
 import adams.data.boofcv.BoofCVImageType;
 import adams.data.image.AbstractImageContainer;
 import adams.flow.control.StorageName;
-import boofcv.struct.image.GrayU8;
+import boofcv.struct.image.ImageUInt8;
 
 import java.awt.image.BufferedImage;
 
@@ -152,7 +152,7 @@ public class BinaryMask
    */
   @Override
   protected BoofCVImageContainer[] doTransform(BoofCVImageContainer img) {
-    GrayU8			maskImg;
+    ImageUInt8			maskImg;
     Object			obj;
     BoofCVImageContainer 	container;
     BufferedImage 		image;
@@ -165,9 +165,9 @@ public class BinaryMask
       throw new IllegalStateException("Mask not available from storage: " + m_Mask);
 
     if (obj instanceof BufferedImage)
-      maskImg = (GrayU8)BoofCVHelper.toBoofCVImage((BufferedImage) obj, BoofCVImageType.UNSIGNED_INT_8);
+      maskImg = (ImageUInt8)BoofCVHelper.toBoofCVImage((BufferedImage) obj, BoofCVImageType.UNSIGNED_INT_8);
     else if (obj instanceof AbstractImageContainer)
-      maskImg = (GrayU8)BoofCVHelper.toBoofCVImage((AbstractImageContainer) obj,BoofCVImageType.UNSIGNED_INT_8);
+      maskImg = (ImageUInt8)BoofCVHelper.toBoofCVImage((AbstractImageContainer) obj,BoofCVImageType.UNSIGNED_INT_8);
     else
       throw new IllegalStateException(
 	"Mask must be either a " + BufferedImage.class.getName()
