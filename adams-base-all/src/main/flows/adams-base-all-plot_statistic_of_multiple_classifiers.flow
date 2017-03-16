@@ -1,0 +1,36 @@
+# Project: adams
+# Date: 2017-03-16 14:28:44
+# User: fracpete
+# Charset: UTF-8
+adams.flow.control.Flow -annotation "Generates a parameter sweep for J48\\\'s confidenceFactor\\nand cross-validates the setup on the labor UCI dataset.\\nThe kappa statistic of the evaluation is plotted. The classifier\\nsetup is stored in the plot\\\'s meta-data as well as output\\nin a Display actor alongside the index used in the plot." -flow-execution-listener adams.flow.execution.NullListener
+ adams.flow.standalone.CallableActors
+  adams.flow.source.WekaClassifierSetup -classifier @{classifier}
+  adams.flow.sink.SequencePlotter -short-title true -writer adams.gui.print.NullWriter -paintlet "adams.gui.visualization.sequence.PaintletWithFixedYRange -max-y 1.1 -paintlet adams.gui.visualization.sequence.BarPaintlet" -overlay-paintlet adams.gui.visualization.sequence.NullPaintlet -marker-paintlet adams.flow.sink.sequenceplotter.NoMarkers -error-paintlet adams.flow.sink.sequenceplotter.NoErrorPaintlet -mouse-click-action adams.flow.sink.sequenceplotter.NullClickAction -color-provider adams.gui.visualization.core.DefaultColorProvider -overlay-color-provider adams.gui.visualization.core.DefaultColorProvider -title Evaluation -axis-x "adams.gui.visualization.core.AxisPanelOptions -label index -tick-generator adams.gui.visualization.core.axis.SimpleFixedLabelTickGenerator -nth-value 1 -width 40 -top-margin 0.05 -bottom-margin 0.05" -axis-y "adams.gui.visualization.core.AxisPanelOptions -label kappa -tick-generator adams.gui.visualization.core.axis.FancyTickGenerator -nth-value 2 -width 60 -custom-format 0.00" -plot-updater adams.flow.sink.sequenceplotter.SimplePlotUpdater -post-processor adams.flow.sink.sequenceplotter.PassThrough
+  adams.flow.sink.Display -name Key -short-title true -x -3 -writer adams.data.io.output.NullWriter
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name "load dataset"
+  adams.flow.source.FileSupplier -file ${FLOWS}/data/labor.arff
+  adams.flow.transformer.WekaFileReader -loader weka.core.converters.SimpleArffLoader
+  adams.flow.transformer.WekaClassSelector
+  adams.flow.transformer.SetStorageValue -storage-name data
+ adams.flow.control.Trigger -name "iterate classifiers"
+  adams.flow.standalone.SetVariable -name SetVariable-1 -var-name index -var-value 0
+  adams.flow.source.WekaClassifierGenerator -setup "weka.classifiers.trees.J48 -C 0.25 -M 2" -parameter "weka.core.setupgenerator.MathParameter -property confidenceFactor -min 0.1 -max 0.7 -step 0.1 -base 10.0 -expression I"
+  adams.flow.transformer.Convert -conversion adams.data.conversion.AnyToCommandline
+  adams.flow.transformer.SetVariable -var-name classifier
+  adams.flow.transformer.IncVariable -var-name index
+  adams.flow.control.Trigger -name "label for plot"
+   adams.flow.source.CombineVariables -expression #@{index}
+   adams.flow.transformer.SetVariable -var-name index_plot
+  adams.flow.control.Trigger -name "evaluate classifier"
+   adams.flow.source.StorageValue -storage-name data
+   adams.flow.transformer.WekaCrossValidationEvaluator -output weka.classifiers.evaluation.output.prediction.Null
+   adams.flow.transformer.WekaEvaluationValuePicker -statistic KAPPA_STATISTIC
+   adams.flow.control.Tee -name "plot statistic"
+    adams.flow.transformer.MakePlotContainer -plot-name kappa
+    adams.flow.transformer.SetPlotContainerValue -container-value X_VALUE -value @{index_plot} -conversion adams.data.conversion.StringToString
+    adams.flow.transformer.SetPlotContainerValue -name SetPlotContainerValue-1 -container-value META_DATA -value @{classifier} -meta-data-key classifier -conversion adams.data.conversion.StringToString
+    adams.flow.sink.CallableSink -callable SequencePlotter
+   adams.flow.control.Trigger -name "output key"
+    adams.flow.source.CombineVariables -expression "#@{index}: @{classifier}"
+    adams.flow.sink.CallableSink -callable Key
