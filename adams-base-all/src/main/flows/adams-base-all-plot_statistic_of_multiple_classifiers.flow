@@ -1,12 +1,13 @@
 # Project: adams
-# Date: 2017-03-16 14:28:44
+# Date: 2017-03-16 14:42:44
 # User: fracpete
 # Charset: UTF-8
 adams.flow.control.Flow -annotation "Generates a parameter sweep for J48\\\'s confidenceFactor\\nand cross-validates the setup on the labor UCI dataset.\\nThe kappa statistic of the evaluation is plotted. The classifier\\nsetup is stored in the plot\\\'s meta-data as well as output\\nin a Display actor alongside the index used in the plot." -flow-execution-listener adams.flow.execution.NullListener
- adams.flow.standalone.CallableActors
-  adams.flow.source.WekaClassifierSetup -classifier @{classifier}
+ adams.flow.standalone.GridView -num-rows 2 -writer adams.gui.print.NullWriter
   adams.flow.sink.SequencePlotter -short-title true -writer adams.gui.print.NullWriter -paintlet "adams.gui.visualization.sequence.PaintletWithFixedYRange -max-y 1.1 -paintlet adams.gui.visualization.sequence.BarPaintlet" -overlay-paintlet adams.gui.visualization.sequence.NullPaintlet -marker-paintlet adams.flow.sink.sequenceplotter.NoMarkers -error-paintlet adams.flow.sink.sequenceplotter.NoErrorPaintlet -mouse-click-action adams.flow.sink.sequenceplotter.NullClickAction -color-provider adams.gui.visualization.core.DefaultColorProvider -overlay-color-provider adams.gui.visualization.core.DefaultColorProvider -title Evaluation -axis-x "adams.gui.visualization.core.AxisPanelOptions -label index -tick-generator adams.gui.visualization.core.axis.SimpleFixedLabelTickGenerator -nth-value 1 -width 40 -top-margin 0.05 -bottom-margin 0.05" -axis-y "adams.gui.visualization.core.AxisPanelOptions -label kappa -tick-generator adams.gui.visualization.core.axis.FancyTickGenerator -nth-value 2 -width 60 -custom-format 0.00" -plot-updater adams.flow.sink.sequenceplotter.SimplePlotUpdater -post-processor adams.flow.sink.sequenceplotter.PassThrough
   adams.flow.sink.Display -name Key -short-title true -x -3 -writer adams.data.io.output.NullWriter
+ adams.flow.standalone.CallableActors
+  adams.flow.source.WekaClassifierSetup -classifier @{classifier}
  adams.flow.source.Start
  adams.flow.control.Trigger -name "load dataset"
   adams.flow.source.FileSupplier -file ${FLOWS}/data/labor.arff
