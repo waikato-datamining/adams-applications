@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -Djava.awt.headless=true -cp "`dirname $0`/../lib/*" -Xmx512m adams.terminal.Main -title ADAMS-Incubator
+`dirname $0`/terminal.sh -memory 512m -main adams.terminal.Main -title ADAMS-Incubator

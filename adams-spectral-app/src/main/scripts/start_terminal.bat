@@ -1,3 +1,3 @@
 @echo off
 
-java -Djava.awt.headless=true -cp "%~dp0\..\lib\*" -Xmx2g adams.terminal.Main -title ADAMS-Spectral
+%~dp0\terminal.bat -memory 2g -main adams.terminal.Main -title ADAMS-Spectral

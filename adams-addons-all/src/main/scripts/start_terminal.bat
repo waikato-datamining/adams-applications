@@ -1,3 +1,3 @@
 @echo off
 
-java -Djava.awt.headless=true -cp "%~dp0\..\lib\*" -Xmx512m adams.terminal.Main -title ADAMS-Addons
+%~dp0\terminal.bat -memory 512m -main adams.terminal.Main -title ADAMS-Addons
