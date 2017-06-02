@@ -1,0 +1,40 @@
+# Project: adams
+# Date: 2017-06-02 15:49:08
+# User: fracpete
+# Charset: UTF-8
+adams.flow.control.Flow -annotation "Converts tweet archives in CSV to ARFF (can be compressed)" -flow-execution-listener adams.flow.execution.NullListener
+ adams.flow.standalone.CallableActors
+  adams.flow.sink.ProgressBar -writer adams.gui.print.NullWriter -max @{max}
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name "prompt user"
+  adams.flow.source.EnterManyValues -stop-if-canceled true -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name dir -display \"Directory with tweet archives\" -type DIRECTORY_ABSOLUTE -default-value ${CWD}" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name arff_dir -display \"Ouput dir for ARFF files\" -type DIRECTORY_ABSOLUTE -default-value ${CWD}"
+  adams.flow.transformer.SpreadSheetVariableRowIterator
+ adams.flow.control.Trigger -name select/process
+  adams.flow.standalone.SetVariable -var-name count -var-value 0
+  adams.flow.source.SelectFile -output-array true -stop-if-canceled true -initial-dir @{dir} -extension csv,csv.gz
+  adams.flow.control.Tee -name "# files"
+   adams.flow.transformer.ArrayLength
+   adams.flow.transformer.SetVariable -var-name max
+  adams.flow.transformer.ArrayToSequence
+  adams.flow.control.Tee -name "relation name"
+   adams.flow.transformer.BaseName -remove-extensions true
+   adams.flow.transformer.SetVariable -var-name relation
+  adams.flow.control.Tee -name "output filename"
+   adams.flow.transformer.BaseName
+   adams.flow.transformer.PrependDir -prefix @{arff_dir}
+   adams.flow.transformer.Convert -conversion "adams.data.conversion.ReplaceFileExtension -extension .arff"
+   adams.flow.transformer.SetVariable -var-name outfile
+   adams.flow.transformer.Convert -name "Convert (2)" -conversion "adams.data.conversion.ReplaceFileExtension -extension .arff.gz"
+   adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name outfilecomp
+  adams.flow.control.Tee -name convert
+   adams.flow.transformer.SpreadSheetFileReader -reader "adams.data.io.input.CsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -text-columns first-last -chunk-size 100000 -parse-formulas false -skip-differing-rows true"
+   adams.flow.transformer.Convert -conversion "adams.data.conversion.SpreadSheetToWekaInstances -max-labels -1"
+   adams.flow.transformer.WekaRenameRelation -replace @{relation}
+   adams.flow.transformer.WekaInstanceBuffer -operation INSTANCES_TO_INSTANCE
+   adams.flow.transformer.WekaInstanceDumper -prefix @{outfile}
+  adams.flow.control.Trigger -name compress
+   adams.flow.source.Variable -var-name outfile -conversion adams.data.conversion.StringToString
+   adams.flow.transformer.GZIP -remove true -output @{outfilecomp} -buffer 10240
+  adams.flow.control.Tee -name progress
+   adams.flow.transformer.IncVariable -var-name count -output-variable-value true
+   adams.flow.sink.CallableSink -callable ProgressBar
