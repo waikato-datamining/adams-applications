@@ -25,12 +25,5 @@
         <include>*:netlib-native_ref-osx-x86_64:*</include>
       </includes>
     </dependencySet>
-    <!-- adams-dl4j -->
-    <dependencySet>
-      <outputDirectory>/lib/windows64</outputDirectory>
-      <includes>
-        <include>*:windows-x86_64-openblas</include>
-      </includes>
-    </dependencySet>
   </dependencySets>
 </component>

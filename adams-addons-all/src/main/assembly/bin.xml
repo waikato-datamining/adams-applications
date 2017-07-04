@@ -101,8 +101,8 @@
         <exclude>*:macosx-x86_64</exclude>
         <exclude>*:windows-x86</exclude>
         <exclude>*:windows-x86_64</exclude>
-        <exclude>*:windows-x86_64-openblas</exclude>   <!-- adams-dl4j -->
         <exclude>*:natives</exclude>
+        <exclude>*:linux-armhf</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
