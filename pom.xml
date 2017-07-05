@@ -25,6 +25,7 @@
     <module>adams-addons-all</module>
     <module>adams-annotator</module>
     <module>adams-base-all</module>
+    <module>adams-deeplearning-spectral-app</module>
     <module>adams-incubator-all</module>
     <module>adams-ml-app</module>
     <module>adams-spectral-app</module>
