@@ -120,6 +120,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- cqengine -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-cqengine</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-cqengine</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- dl4j -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
