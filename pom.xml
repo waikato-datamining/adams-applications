@@ -39,9 +39,10 @@
   </properties>
 
   <scm>
-    <connection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</connection>
-    <developerConnection>scm:svn:https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</developerConnection>
-    <url>https://svn.cms.waikato.ac.nz/svn/adams/applications/trunk</url>
+    <connection>scm:git:https://github.com/waikato/adams-applications</connection>
+    <developerConnection>scm:git:https://github.com/waikato/adams-applications</developerConnection>
+    <url>https://github.com/waikato/adams-applications</url>
+    <tag>HEAD</tag>
   </scm>
 
   <build>
@@ -50,10 +51,12 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
-          <version>2.5</version>
+          <version>2.5.1</version>
           <configuration>
-            <tagBase>https://svn.cms.waikato.ac.nz/svn/adams/applications/tags</tagBase>
             <useReleaseProfile>false</useReleaseProfile>
+            <localCheckout>true</localCheckout>
+            <pushChanges>true</pushChanges>
+            <commitByProject>true</commitByProject>
           </configuration>
         </plugin>
       </plugins>
