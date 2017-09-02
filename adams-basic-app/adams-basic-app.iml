@@ -10,6 +10,18 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="adams-core" />
+    <orderEntry type="library" name="Maven: com.github.waikato:jclasslocator:0.0.6" level="project" />
+    <orderEntry type="library" name="Maven: com.github.waikato:jeneric-cmdline:0.0.5" level="project" />
+    <orderEntry type="module" module-name="adams-core" scope="TEST" production-on-test="" />
+    <orderEntry type="module" module-name="adams-groovy" />
+    <orderEntry type="module" module-name="adams-weka" />
+    <orderEntry type="module" module-name="adams-ml" />
+    <orderEntry type="module" module-name="adams-visualstats" />
+    <orderEntry type="module" module-name="adams-groovy" scope="TEST" production-on-test="" />
+    <orderEntry type="module" module-name="adams-scripts" />
+    <orderEntry type="module" module-name="adams-spreadsheet" />
+    <orderEntry type="module" module-name="adams-spreadsheet" scope="TEST" production-on-test="" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:3.8.2" level="project" />
     <orderEntry type="module" module-name="adams-core" />
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.42" level="project" />
@@ -59,8 +71,8 @@
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.github.fracpete:jfilechooser-bookmarks:0.1.6" level="project" />
     <orderEntry type="library" name="Maven: com.github.fracpete:jclipboardhelper:0.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.github.waikato:jclasslocator:0.0.6" level="project" />
-    <orderEntry type="library" name="Maven: com.github.waikato:jeneric-cmdline:0.0.5" level="project" />
+    <orderEntry type="library" name="Maven: com.github.waikato:jclasslocator:0.0.7" level="project" />
+    <orderEntry type="library" name="Maven: com.github.waikato:jeneric-cmdline:0.0.6" level="project" />
     <orderEntry type="library" name="Maven: org.jodd:jodd-core:3.5.2" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.xstream:xstream:1.4.8" level="project" />
     <orderEntry type="library" name="Maven: xmlpull:xmlpull:1.1.3.1" level="project" />
