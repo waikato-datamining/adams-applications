@@ -1,0 +1,38 @@
+# Project: adams
+# Date: 2017-10-06 13:56:45
+# User: fracpete
+# Charset: UTF-8
+adams.flow.control.Flow -annotation "Generates lists of actors and conversions." -flow-execution-listener adams.flow.execution.NullListener
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name actors
+  adams.flow.standalone.JavaExec -java-class adams.core.ClassLister -option -super -option adams.flow.core.Actor -record-output true -stdout "adams.flow.sink.Null -name stdout" -stderr "adams.flow.sink.Null -name stderr"
+   adams.flow.control.Sequence -name stdout
+    adams.flow.transformer.StringSplit -expression \n
+    adams.flow.transformer.StringMatcher -regexp .*\\.flow\\..*
+    adams.flow.transformer.StringMatcher -name "StringMatcher (2)" -regexp .*--.* -invert true
+    adams.flow.control.Branch
+     adams.flow.control.Sequence -name text
+      adams.flow.transformer.StringJoin -glue \n
+      adams.flow.sink.Display -name Actors -short-title true -writer adams.data.io.output.NullWriter
+     adams.flow.control.Sequence -name spreadsheet
+      adams.flow.control.ArrayProcess
+       adams.flow.transformer.StringReplace -find .*\\.(control|standalone|source|transformer|sink)\\..* -replace $1,$0 -type ALL
+      adams.flow.transformer.StringJoin -glue \n
+      adams.flow.transformer.Convert -conversion "adams.data.conversion.StringToSpreadSheet -reader \"adams.data.io.input.CsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -no-header true -custom-column-headers Type,Classname\""
+      adams.flow.sink.SpreadSheetDisplay -name Actors -short-title true -y -3 -writer adams.data.io.output.NullWriter
+   adams.flow.sink.Null -name stderr
+ adams.flow.control.Trigger -name conversions
+  adams.flow.standalone.JavaExec -java-class adams.core.ClassLister -option -super -option adams.data.conversion.Conversion -record-output true -stdout "adams.flow.sink.Null -name stdout" -stderr "adams.flow.sink.Null -name stderr"
+   adams.flow.control.Sequence -name stdout
+    adams.flow.transformer.StringSplit -expression \n
+    adams.flow.transformer.StringMatcher -regexp .*\\.data\\..*
+    adams.flow.transformer.StringMatcher -name "StringMatcher (2)" -regexp .*--.* -invert true
+    adams.flow.control.Branch
+     adams.flow.control.Sequence -name text
+      adams.flow.transformer.StringJoin -glue \n
+      adams.flow.sink.Display -name Conversions -short-title true -x -3 -writer adams.data.io.output.NullWriter
+     adams.flow.control.Sequence -name spreadsheet
+      adams.flow.transformer.StringJoin -glue \n
+      adams.flow.transformer.Convert -conversion "adams.data.conversion.StringToSpreadSheet -reader \"adams.data.io.input.CsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -no-header true -custom-column-headers Classname\""
+      adams.flow.sink.SpreadSheetDisplay -name Conversions -short-title true -x -3 -y -3 -writer adams.data.io.output.NullWriter
+   adams.flow.sink.Null -name stderr
