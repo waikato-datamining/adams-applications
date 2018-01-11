@@ -78,20 +78,6 @@
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-dl4j-weka</artifactId>
-      <version>${adams.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-dl4j-weka</artifactId>
-      <version>${adams.version}</version>
-      <scope>test</scope>
-      <type>test-jar</type>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-cntk</artifactId>
       <version>${adams.version}</version>
     </dependency>
@@ -106,13 +92,13 @@
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-cntk-weka</artifactId>
+      <artifactId>adams-cntk-weka-stable</artifactId>
       <version>${adams.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-cntk-weka</artifactId>
+      <artifactId>adams-cntk-weka-stable</artifactId>
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
