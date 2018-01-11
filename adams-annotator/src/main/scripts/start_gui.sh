@@ -1,3 +1,3 @@
 #!/bin/bash
 
-`dirname $0`/launcher.sh -main adams.gui.Main -memory 1g -title ADAMS-Annotator
+`dirname $0`/launcher.sh -main adams.gui.Main -memory 1g -title ADAMS-Annotator -env-modifier adams.core.management.WekaHomeEnvironmentModifier
