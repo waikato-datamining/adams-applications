@@ -90,13 +90,6 @@
       <type>test-jar</type>
     </dependency>
 
-    <!-- geonet -->
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-geonet</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-
     <!-- geotools -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
