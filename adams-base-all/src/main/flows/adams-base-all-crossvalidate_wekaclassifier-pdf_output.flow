@@ -1,115 +1,24 @@
 # Project: adams
-# Date: 2015-06-18 20:54:26
+# Modules: adams-access,adams-compress,adams-core,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagej,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jython,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka
+# Date: 2018-03-12 18:44:12
 # User: fracpete
 # Charset: UTF-8
-#
-adams.flow.control.Flow
-	-annotation
-	Cross-validates a classifier and outputs\nthe evaluation summary.
-	-actor
-		adams.flow.standalone.CallableActors
-			-actor
-				adams.flow.source.WekaClassifierSetup
-					-name
-					WekaClassifier
-					-classifier
-						weka.classifiers.trees.J48
-							-C
-							0.25
-							-M
-							2
-	-actor
-		adams.flow.standalone.DeleteFile
-			-dir
-			${TMP}
-			-regexp
-			out\\.(pdf|png|csv)
-	-actor
-		adams.flow.source.FileSupplier
-			-file
-			${FLOWS}/data/anneal.arff
-	-actor
-		adams.flow.transformer.WekaFileReader
-			-loader
-				weka.core.converters.ArffLoader
-	-actor
-		adams.flow.transformer.WekaClassSelector
-	-actor
-		adams.flow.transformer.WekaCrossValidationEvaluator
-			-output
-				weka.classifiers.evaluation.output.prediction.Null
-			-classifier
-			WekaClassifier
-	-actor
-		adams.flow.control.Branch
-			-branch
-				adams.flow.control.Sequence
-					-name
-					CSV
-					-actor
-						adams.flow.transformer.WekaEvaluationValues
-					-actor
-						adams.flow.sink.DumpFile
-							-output
-							${TMP}/out.csv
-			-branch
-				adams.flow.control.Sequence
-					-name
-					ROC
-					-actor
-						adams.flow.sink.WekaThresholdCurve
-							-width
-							800
-							-height
-							600
-							-writer
-								adams.gui.print.PNGWriter
-									-file
-									${TMP}/out.png
-			-branch
-				adams.flow.control.Sequence
-					-name
-					PDF
-					-actor
-						adams.flow.source.DirectoryLister
-							-output-array
-							true
-							-dir
-							${TMP}
-							-list-files
-							true
-							-regexp
-							out\\.(csv|png)
-					-actor
-						adams.flow.transformer.Sort
-							-comparator
-								adams.core.DefaultCompare
-					-actor
-						adams.flow.transformer.PDFCreate
-							-output
-							${TMP}/out.pdf
-							-proclet
-								adams.core.io.PlainTextPdfProclet
-							-proclet
-								adams.core.io.CsvPdfProclet
-									-reader
-										adams.data.io.input.CsvSpreadSheetReader
-											-data-row-type
-												adams.data.spreadsheet.DenseDataRow
-											-spreadsheet-type
-												adams.data.spreadsheet.SpreadSheet
-							-proclet
-								adams.core.io.ImagePdfProclet
-									-scale
-									0.75
-					-actor
-						adams.flow.sink.PDFViewer
-							-x
-							-3
-							-writer
-								adams.gui.print.NullWriter
-			-num-threads
-			0
-	-flow-execution-listener
-		adams.flow.execution.NullListener
-
+adams.flow.control.Flow -annotation "Cross-validates a classifier and outputs\\nthe evaluation summary." -flow-execution-listener adams.flow.execution.NullListener
+ adams.flow.standalone.CallableActors
+  adams.flow.source.WekaClassifierSetup -name WekaClassifier -classifier "weka.classifiers.trees.J48 -C 0.25 -M 2"
+ adams.flow.standalone.DeleteFile -dir ${TMP} -regexp out\\.(pdf|png|csv)
+ adams.flow.source.FileSupplier -file ${FLOWS}/data/anneal.arff
+ adams.flow.transformer.WekaFileReader -loader weka.core.converters.ArffLoader
+ adams.flow.transformer.WekaClassSelector
+ adams.flow.transformer.WekaCrossValidationEvaluator -output weka.classifiers.evaluation.output.prediction.Null -classifier WekaClassifier -generator weka.classifiers.DefaultCrossValidationFoldGenerator
+ adams.flow.control.Branch
+  adams.flow.control.Sequence -name CSV
+   adams.flow.transformer.WekaEvaluationValues
+   adams.flow.sink.DumpFile -output ${TMP}/out.csv
+  adams.flow.control.Sequence -name ROC
+   adams.flow.sink.WekaThresholdCurve -width 800 -height 600 -writer "adams.gui.print.PNGWriter -file ${TMP}/out.png"
+  adams.flow.control.Sequence -name PDF
+   adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory ${TMP} -regexp out\\\\.(csv|png)"
+   adams.flow.transformer.Sort -comparator adams.core.DefaultCompare
+   adams.flow.transformer.PDFCreate -output ${TMP}/out.pdf -proclet adams.flow.transformer.pdfproclet.PlainText -proclet "adams.flow.transformer.pdfproclet.SpreadSheet -reader \"adams.data.io.input.CsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet\"" -proclet "adams.flow.transformer.pdfproclet.Image -scale 0.75"
+   adams.flow.sink.PDFViewer -x -3 -writer adams.gui.print.NullWriter
