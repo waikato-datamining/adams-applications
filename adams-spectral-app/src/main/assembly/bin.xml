@@ -94,7 +94,11 @@
         <exclude>de.jflex:jflex:*</exclude>
         <exclude>*:scripts</exclude>
         <exclude>*:android-arm</exclude>
+        <exclude>*:android-arm64</exclude>
         <exclude>*:android-x86</exclude>
+        <exclude>*:android-x86_64</exclude>
+        <exclude>*:ios-arm64</exclude>
+        <exclude>*:ios-x86_64</exclude>
         <exclude>*:linux-x86</exclude>
         <exclude>*:linux-x86_64</exclude>
         <exclude>*:linux-ppc64le</exclude>
