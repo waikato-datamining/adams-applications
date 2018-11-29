@@ -11,7 +11,7 @@ adams.flow.control.Flow
 			-file
 			${FLOWS}/data/4825046958_787c97bc96.jpg
 	-actor
-		adams.flow.transformer.ImageReader
+		adams.flow.transformer.ImageFileReader
 			-reader
 				adams.data.io.input.JAIImageReader
 	-actor
