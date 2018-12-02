@@ -419,7 +419,7 @@ adams.flow.control.Flow
 											-expand-value
 											true
 									-tee
-										adams.flow.sink.ImageWriter
+										adams.flow.sink.ImageFileWriter
 											-output
 											@{subimage}
 											-writer
