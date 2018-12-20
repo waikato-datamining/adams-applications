@@ -1,69 +1,20 @@
 # Project: adams
-# Date: 2014-02-21 00:18:28
+# Date: 2018-12-20 16:02:06
 # User: fracpete
 # Charset: UTF-8
+# Modules: adams-access,adams-compress,adams-core,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jython,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka
 #
-adams.flow.control.Flow
-	-annotation
-	In this example we download a ZIP file with ARFF files\nfrom the WEKA sourceforge.net website, extract all\nARFF files that match a particular regular expression\nand then display the content of them.
-	-actor
-		adams.flow.standalone.SetVariable
-			-name
-			remote file
-			-var-name
-			remotefile
-			-var-value
-			http://sourceforge.net/projects/weka/files/datasets/datasets-UCI/datasets-UCI_20051003.jar/download
-	-actor
-		adams.flow.standalone.SetVariable
-			-name
-			local file
-			-var-name
-			zipfile
-			-var-value
-			${TMP}/out.zip
-	-actor
-		adams.flow.standalone.DeleteFile
-			-dir
-			${TMP}
-			-regexp
-			out.zip
-	-actor
-		adams.flow.source.Start
-	-actor
-		adams.flow.control.Trigger
-			-name
-			Trigger (download zip)
-			-tee
-				adams.flow.source.URLSupplier
-					-url
-					@{remotefile}
-			-tee
-				adams.flow.sink.DownloadFile
-					-output
-					@{zipfile}
-	-actor
-		adams.flow.control.Trigger
-			-name
-			Trigger (extract file)
-			-tee
-				adams.flow.source.FileSupplier
-					-file
-					@{zipfile}
-			-tee
-				adams.flow.transformer.UnZIP
-					-out-dir
-					${TMP}
-					-reg-exp
-					.*ecoli.*
-			-tee
-				adams.flow.transformer.ArrayToSequence
-			-tee
-				adams.flow.transformer.TextFileReader
-					-reader
-						adams.data.io.input.SingleStringTextReader
-			-tee
-				adams.flow.sink.HistoryDisplay
-	-flow-execution-listener
-		adams.flow.execution.NullListener
-
+adams.flow.control.Flow -annotation "In this example we download a ZIP file with ARFF files\\nfrom the WEKA sourceforge.net website, extract all\\nARFF files that match a particular regular expression\\nand then display the content of them." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
+ adams.flow.standalone.SetVariable -name "remote file" -var-name remotefile -var-value https://sourceforge.net/projects/weka/files/datasets/datasets-UCI/datasets-UCI_20051003.jar/download
+ adams.flow.standalone.SetVariable -name "local file" -var-name zipfile -var-value ${TMP}/out.zip
+ adams.flow.standalone.DeleteFile -dir ${TMP} -regexp out.zip
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name "Trigger (download zip)"
+  adams.flow.source.URLSupplier -url @{remotefile}
+  adams.flow.sink.DownloadFile -output @{zipfile}
+ adams.flow.control.Trigger -name "Trigger (extract file)"
+  adams.flow.source.FileSupplier -file @{zipfile}
+  adams.flow.transformer.UnZIP -out-dir ${TMP} -reg-exp .*ecoli.*
+  adams.flow.transformer.ArrayToSequence
+  adams.flow.transformer.TextFileReader -reader adams.data.io.input.SingleStringTextReader
+  adams.flow.sink.HistoryDisplay
