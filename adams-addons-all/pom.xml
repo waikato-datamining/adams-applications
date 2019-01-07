@@ -285,6 +285,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- meka-webservice -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-meka-webservice</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-meka-webservice</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- moa -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
@@ -512,6 +527,33 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.10</version>
+          <executions>
+            <!-- get all wsdl jars -->
+            <execution>
+              <id>wsdl</id>
+              <phase>prepare-package</phase>
+              <goals>
+                <goal>unpack-dependencies</goal>
+              </goals>
+              <configuration>
+                <includeArtifactIds>adams-image-webservice,adams-meka-webservice,adams-rats,adams-webservice,adams-weka-webservice</includeArtifactIds>
+                <classifier>wsdl</classifier>
+                <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+                <outputDirectory>${project.build.directory}/wsdl</outputDirectory>
+                <includeGroupIds>${project.groupId}</includeGroupIds>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
