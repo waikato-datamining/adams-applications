@@ -495,16 +495,16 @@
       <type>test-jar</type>
     </dependency>
 
-    <!-- meka-webservice -->
+    <!-- weka-nd4j -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-meka-webservice</artifactId>
+      <artifactId>adams-weka-nd4j</artifactId>
       <version>${adams.version}</version>
     </dependency>
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-meka-webservice</artifactId>
+      <artifactId>adams-weka-nd4j</artifactId>
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
