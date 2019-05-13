@@ -1,8 +1,8 @@
 # Project: adams
-# Date: 2019-05-08 17:06:41
+# Date: 2019-05-13 15:10:17
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-access,adams-audio,adams-cntk,adams-cntk-weka,adams-compress,adams-core,adams-cqengine,adams-event,adams-excel,adams-ffmpeg,adams-gnuplot,adams-groovy,adams-groovy-webservice,adams-heatmap,adams-image-webservice,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jooq,adams-jython,adams-latex,adams-maps,adams-meka,adams-meka-webservice,adams-meta,adams-ml,adams-moa,adams-mongodb,adams-net,adams-nlp,adams-odf,adams-osm,adams-pdf,adams-python,adams-python-weka,adams-r,adams-rabbitmq,adams-random,adams-rats,adams-rest,adams-rsync,adams-spreadsheet,adams-timeseries,adams-twitter,adams-twitter-rats,adams-video,adams-visualstats,adams-webservice,adams-weka,adams-weka-nd4j,adams-weka-webservice
+# Modules: adams-access,adams-audio,adams-cntk,adams-cntk-weka,adams-compress,adams-core,adams-cqengine,adams-event,adams-excel,adams-ffmpeg,adams-gnuplot,adams-groovy,adams-groovy-webservice,adams-heatmap,adams-image-webservice,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jooq,adams-jython,adams-latex,adams-maps,adams-meka,adams-meka-webservice,adams-meta,adams-ml,adams-moa,adams-mongodb,adams-net,adams-nlp,adams-odf,adams-osm,adams-pdf,adams-python,adams-python-weka,adams-r,adams-rabbitmq,adams-random,adams-rats,adams-rest,adams-rsync,adams-security,adams-spreadsheet,adams-timeseries,adams-twitter,adams-twitter-rats,adams-video,adams-visualstats,adams-webservice,adams-weka,adams-weka-nd4j,adams-weka-webservice
 #
 adams.flow.control.Flow -annotation "Executes jobs it receives on the \\\"jobs\\\" queue and sends them back once executed." -error-handling ACTORS_DECIDE_TO_STOP_ON_ERROR -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.standalone.CallableActors
