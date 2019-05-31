@@ -226,6 +226,83 @@
           <useMissingFile>true</useMissingFile>
         </configuration>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.3</version>
+        <executions>
+          <execution>
+            <id>debian-copy-docs</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <overwrite>true</overwrite>
+              <outputDirectory>${project.basedir}/target/deb/usr/share/doc/${project.name}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}/doc/docs</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>debian-copy-resources</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <overwrite>true</overwrite>
+              <outputDirectory>${project.basedir}/target/deb</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/deb/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>debian-maven-plugin</artifactId>
+        <configuration>
+          <packageName>${project.name}</packageName>
+          <packageTitle>ADAMS deep-learning spectral application</packageTitle>
+          <packageVersion>${project.version}</packageVersion>
+          <projectUrl>${project.url}</projectUrl>
+          <packageDescription>ADAMS application for spectral data with additional deeplearning modules.</packageDescription>
+          <excludeArtifactsRegExp>
+            <param>.*-osx-x86.*</param>
+            <param>.*-win-x86.*</param>
+            <param>.*:android-arm</param>
+            <param>.*:android-arm64</param>
+            <param>.*:android-x86</param>
+            <param>.*:android-x86_64</param>
+            <param>.*:ios-arm64</param>
+            <param>.*:ios-x86_64</param>
+            <param>.*:linux-x86</param>
+            <param>.*:linux-x86_64</param>
+            <param>.*:linux-ppc64le</param>
+            <param>.*:macosx-x86_64</param>
+            <param>.*:windows-x86</param>
+            <param>.*:windows-x86_64</param>
+            <param>.*:linux-armhf</param>
+          </excludeArtifactsRegExp>
+          <packageDependencies>
+            <packageDependency>openjdk-11-jre</packageDependency>
+          </packageDependencies>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
