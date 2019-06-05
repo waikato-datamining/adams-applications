@@ -534,6 +534,8 @@
           <packageVersion>${project.version}</packageVersion>
           <projectUrl>${project.url}</projectUrl>
           <packageDescription>ADAMS application that contains all modules from adams-base.</packageDescription>
+          <createSymLinks>false</createSymLinks>
+          <createIncludeFiles>false</createIncludeFiles>
           <excludeArtifactsRegExp>
             <param>.*-osx-x86.*</param>
             <param>.*-win-x86.*</param>
