@@ -83,6 +83,22 @@
                 <goal>run</goal>
               </goals>
             </execution>
+            <execution>
+              <id>debian-copy-sources</id>
+              <phase>prepare-package</phase>
+              <configuration>
+                <target>
+                  <copy toDir="${basedir}/target/deb/usr/lib/${project.name}/src">
+                    <fileset dir="${basedir}/target/sources">
+                      <include name="*.jar"/>
+                    </fileset>
+                  </copy>
+                </target>
+              </configuration>
+              <goals>
+                <goal>run</goal>
+              </goals>
+            </execution>
           </executions>
         </plugin>
 
