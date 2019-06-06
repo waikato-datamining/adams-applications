@@ -21,7 +21,7 @@
 #   Copyright (C) 2011-2019 University of Waikato, Hamilton, NZ
 
 APPNAME=${project.name}
-REPO=/usr/share/lib/$APPNAME
+REPO=/usr/lib/$APPNAME
 PRIORITY=$REPO/java-cup-11b-2015.03.26.jar
 CLASSPATH="$PRIORITY":"$REPO/*"
 
