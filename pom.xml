@@ -60,54 +60,21 @@
         </plugin>
 
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <version>1.8</version>
-          <executions>
-            <execution>
-              <id>debian-fix-permissions</id>
-              <phase>package</phase>
-              <configuration>
-                <target>
-                  <chmod perm="ugo+x">
-                    <fileset dir="${basedir}/target/deb">
-                      <include name="**/bin/**"/>
-                      <include name="**/sbin/**"/>
-                      <include name="DEBIAN/post*"/>
-                      <include name="DEBIAN/pre*"/>
-                    </fileset>
-                  </chmod>
-                </target>
-              </configuration>
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>debian-copy-sources</id>
-              <phase>prepare-package</phase>
-              <configuration>
-                <target>
-                  <copy toDir="${basedir}/target/deb/usr/lib/${project.name}/src">
-                    <fileset dir="${basedir}/target/sources">
-                      <include name="*.jar"/>
-                    </fileset>
-                  </copy>
-                </target>
-              </configuration>
-              <goals>
-                <goal>run</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-
-        <plugin>
           <groupId>com.github.fracpete</groupId>
           <artifactId>debian-maven-plugin</artifactId>
-          <version>1.0.11</version>
+          <version>1.0.12</version>
         </plugin>
       </plugins>
     </pluginManagement>
+
+    <plugins>
+      <plugin>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>debian-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

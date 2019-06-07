@@ -199,54 +199,10 @@
       </plugin>
 
       <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.3</version>
-        <executions>
-          <execution>
-            <id>debian-copy-docs</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <overwrite>true</overwrite>
-              <outputDirectory>${project.basedir}/target/deb/usr/share/doc/${project.name}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>${project.build.directory}/doc/docs</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-          <execution>
-            <id>debian-copy-resources</id>
-            <phase>prepare-package</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <overwrite>true</overwrite>
-              <outputDirectory>${project.basedir}/target/deb</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/deb/resources</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-      </plugin>
-
-      <plugin>
         <groupId>com.github.fracpete</groupId>
         <artifactId>debian-maven-plugin</artifactId>
         <configuration>
+          <skip>false</skip>
           <packageName>${project.name}</packageName>
           <packageTitle>ADAMS Basic</packageTitle>
           <packageVersion>${project.version}</packageVersion>
@@ -271,6 +227,23 @@
             <param>.*:windows-x86_64</param>
             <param>.*:linux-armhf</param>
           </excludeArtifactsRegExp>
+          <useDefaultCopyResources>false</useDefaultCopyResources>
+          <copyResources>
+            <copyResource>
+              <source>${project.basedir}/src/deb</source>
+              <target>${project.basedir}/target/deb</target>
+            </copyResource>
+            <copyResource>
+              <source>${project.basedir}/target/sources</source>
+              <target>${project.basedir}/target/deb/usr/lib/${project.name}/src</target>
+              <include>.*\.jar</include>
+            </copyResource>
+            <copyResource>
+              <source>${project.basedir}/target/doc/docs</source>
+              <target>${project.basedir}/target/deb/usr/share/doc/${project.name}</target>
+            </copyResource>
+          </copyResources>
+          <useDefaultFixPermissions>true</useDefaultFixPermissions>
           <packageDependencies>
             <packageDependency>openjdk-11-jre</packageDependency>
           </packageDependencies>
