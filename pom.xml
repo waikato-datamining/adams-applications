@@ -62,7 +62,7 @@
         <plugin>
           <groupId>com.github.fracpete</groupId>
           <artifactId>debian-maven-plugin</artifactId>
-          <version>1.0.12</version>
+          <version>1.0.15</version>
         </plugin>
       </plugins>
     </pluginManagement>
