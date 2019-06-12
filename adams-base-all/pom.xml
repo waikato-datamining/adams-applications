@@ -492,6 +492,9 @@
           <packageDescription>ADAMS application that contains all modules from adams-base.</packageDescription>
           <createSymLinks>false</createSymLinks>
           <createIncludeFiles>false</createIncludeFiles>
+          <fileFiltering>
+            <enabled>true</enabled>
+          </fileFiltering>
           <excludeArtifactsRegExp>
             <param>.*-osx-x86.*</param>
             <param>.*-win-x86.*</param>

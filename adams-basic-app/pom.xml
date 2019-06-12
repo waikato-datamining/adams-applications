@@ -210,6 +210,9 @@
           <packageDescription>ADAMS application that contains only the groovy and spreadsheet modules.</packageDescription>
           <createSymLinks>false</createSymLinks>
           <createIncludeFiles>false</createIncludeFiles>
+          <fileFiltering>
+            <enabled>true</enabled>
+          </fileFiltering>
           <excludeArtifactsRegExp>
             <param>.*-osx-x86.*</param>
             <param>.*-win-x86.*</param>
