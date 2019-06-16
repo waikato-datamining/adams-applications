@@ -230,12 +230,8 @@
             <param>.*:windows-x86_64</param>
             <param>.*:linux-armhf</param>
           </excludeArtifactsRegExp>
-          <useDefaultCopyResources>false</useDefaultCopyResources>
+          <useDefaultCopyResources>true</useDefaultCopyResources>
           <copyResources>
-            <copyResource>
-              <source>${project.basedir}/src/deb</source>
-              <target>${project.basedir}/target/deb</target>
-            </copyResource>
             <copyResource>
               <source>${project.basedir}/target/sources</source>
               <target>${project.basedir}/target/deb/usr/lib/${project.name}/src</target>
