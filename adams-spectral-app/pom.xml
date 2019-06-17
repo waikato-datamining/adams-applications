@@ -64,6 +64,13 @@
 
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-scripts-debian</artifactId>
+      <version>${adams.version}</version>
+      <classifier>scripts</classifier>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-spectral-2dim-core</artifactId>
       <version>${adams.version}</version>
     </dependency>
@@ -301,8 +308,24 @@
             <param>.*:windows-x86_64</param>
             <param>.*:linux-armhf</param>
           </excludeArtifactsRegExp>
-          <useDefaultCopyResources>true</useDefaultCopyResources>
+          <useDefaultCopyResources>false</useDefaultCopyResources>
           <copyResources>
+            <copyResource>
+              <source>${project.basedir}/target/scripts-debian/debian-main</source>
+              <target>${project.basedir}/target/deb/usr/bin/${project.name}-gui</target>
+            </copyResource>
+            <copyResource>
+              <source>${project.basedir}/target/scripts-debian/debian-daemon</source>
+              <target>${project.basedir}/target/deb/usr/bin/${project.name}-daemon</target>
+            </copyResource>
+            <copyResource>
+              <source>${project.basedir}/target/scripts-debian/debian-main.svg</source>
+              <target>${project.basedir}/target/deb/usr/share/pixmaps/${project.name}.svg</target>
+            </copyResource>
+            <copyResource>
+              <source>${project.basedir}/target/scripts-debian/debian-main.desktop</source>
+              <target>${project.basedir}/target/deb/usr/share/applications/${project.name}.desktop</target>
+            </copyResource>
             <copyResource>
               <source>${project.basedir}/target/sources</source>
               <target>${project.basedir}/target/deb/usr/lib/${project.name}/src</target>
