@@ -277,6 +277,10 @@
               <target>${project.basedir}/target/deb/usr/bin/${project.name}-daemon</target>
             </copyResource>
             <copyResource>
+              <source>${project.basedir}/target/scripts-debian/debian-exec</source>
+              <target>${project.basedir}/target/deb/usr/bin/${project.name}-exec</target>
+            </copyResource>
+            <copyResource>
               <source>${project.basedir}/target/scripts-debian/debian-gui.svg</source>
               <target>${project.basedir}/target/deb/usr/share/pixmaps/${project.name}.svg</target>
             </copyResource>
