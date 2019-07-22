@@ -437,7 +437,7 @@
           </copyResources>
           <useDefaultFixPermissions>true</useDefaultFixPermissions>
           <packageDependencies>
-            <packageDependency>openjdk-11-jre</packageDependency>
+            <packageDependency>openjdk-11-jre | openjdk-11-jre-headless</packageDependency>
           </packageDependencies>
         </configuration>
       </plugin>
