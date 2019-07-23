@@ -31,8 +31,7 @@ RUN wget -O /tmp/adams-spectral-app-snapshot.deb https://adams.cms.waikato.ac.nz
 WORKDIR /opt/adams-spectral-app
 RUN wget -O execute_flow_and_jobs.flow https://raw.githubusercontent.com/waikato-datamining/adams-addons/master/adams-rabbitmq-rats/src/main/flows/adams-rabbitmq-rats-execute_flow_and_jobs-envvars.flow
 
+# start flow
 ARG MEMORY='4g'
 ENV ENV_MEMORY=$MEMORY
-
-# start flow
 CMD bash -c adams-spectral-app-exec -headless -memory $ENV_MEMORY -input /opt/adams-spectral-app/execute_flow_and_jobs.flow
