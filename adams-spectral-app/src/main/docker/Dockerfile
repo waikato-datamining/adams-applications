@@ -10,6 +10,7 @@
 # - RABBITMQ_VHOST
 # - RABBITMQ_QUEUE_FLOW
 # - RABBITMQ_QUEUE_JOBS
+# - MEMORY        (for JVM, default 4g)
 
 # base image
 FROM ubuntu:18.04
@@ -30,5 +31,8 @@ RUN wget -O /tmp/adams-spectral-app-snapshot.deb https://adams.cms.waikato.ac.nz
 WORKDIR /opt/adams-spectral-app
 RUN wget -O execute_flow_and_jobs.flow https://raw.githubusercontent.com/waikato-datamining/adams-addons/master/adams-rabbitmq-rats/src/main/flows/adams-rabbitmq-rats-execute_flow_and_jobs-envvars.flow
 
+ARG MEMORY='4g'
+ENV ENV_MEMORY=$MEMORY
+
 # start flows
-CMD ["bash", "-c", "adams-spectral-app-exec -headless -memory 4g -input /opt/adams-spectral-app/execute_flow_and_jobs.flow" ]
+CMD bash -c adams-spectral-app-exec -headless -memory $ENV_MEMORY -input /opt/adams-spectral-app/execute_flow_and_jobs.flow
