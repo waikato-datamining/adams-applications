@@ -34,5 +34,5 @@ RUN wget -O execute_flow_and_jobs.flow https://raw.githubusercontent.com/waikato
 ARG MEMORY='4g'
 ENV ENV_MEMORY=$MEMORY
 
-# start flows
+# start flow
 CMD bash -c adams-spectral-app-exec -headless -memory $ENV_MEMORY -input /opt/adams-spectral-app/execute_flow_and_jobs.flow
