@@ -7,7 +7,7 @@
 From within the `docker` directory:
 
 ```
-docker build .
+docker build -t adams-spectral-app:latest .
 ```
 
 ## Run image
