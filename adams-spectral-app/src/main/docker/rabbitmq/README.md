@@ -4,7 +4,7 @@
 
 **NB:** Downloads the .deb snapshot rather than building it. 
 
-From within the `docker` directory:
+From within the `docker/rabbitmq` directory:
 
 ```
 docker build -t adams-spectral-app:latest .
