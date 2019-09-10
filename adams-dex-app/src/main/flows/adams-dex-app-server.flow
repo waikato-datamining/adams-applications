@@ -1,0 +1,9 @@
+# Project: adams
+# Date: 2019-09-10 12:51:50
+# User: fracpete
+# Charset: UTF-8
+# Modules: adams-core,adams-event,adams-meta,adams-net,adams-rabbitmq,adams-rest,adams-security,adams-webservice-core
+#
+adams.flow.control.Flow -annotation "Runs a simple data exchange server that uses in-memory storage and requires no login." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
+ adams.flow.standalone.RESTServer -web-service "adams.flow.rest.dex.DataExchangeServer -logging-level FINE -in-interceptor adams.flow.rest.interceptor.incoming.NullGenerator -out-interceptor adams.flow.rest.interceptor.outgoing.NullGenerator -authentication adams.flow.rest.dex.authentication.NoAuthenticationRequired -backend \"adams.flow.rest.dex.backend.InMemory -logging-level INFO -sequential-tokens true\""
+ adams.flow.source.Idle
