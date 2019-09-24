@@ -487,6 +487,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- terminal -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-terminal</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-terminal</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- twitter -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
