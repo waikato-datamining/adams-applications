@@ -244,6 +244,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- math -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-math</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-math</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- meta -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
