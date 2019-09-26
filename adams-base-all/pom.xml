@@ -229,6 +229,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- json -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-json</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-json</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- jython -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
