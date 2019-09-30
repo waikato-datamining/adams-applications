@@ -207,7 +207,7 @@
           <packageTitle>ADAMS DEX</packageTitle>
           <packageVersion>${project.version}</packageVersion>
           <projectUrl>${project.url}</projectUrl>
-          <packageDescription>ADAMS application that contains only the groovy and spreadsheet modules.</packageDescription>
+          <packageDescription>ADAMS data exchange server (DEX), to be used in conjunction with RabbitMQ for offloading payloads.</packageDescription>
           <createSymLinks>false</createSymLinks>
           <createIncludeFiles>false</createIncludeFiles>
           <fileFiltering>
