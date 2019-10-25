@@ -65,6 +65,12 @@
           <artifactId>debian-maven-plugin</artifactId>
           <version>${debianmavenplugin.version}</version>
         </plugin>
+
+        <plugin>
+          <groupId>com.github.fracpete</groupId>
+          <artifactId>rpm-maven-plugin</artifactId>
+          <version>${rpmmavenplugin.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -72,6 +78,14 @@
       <plugin>
         <groupId>com.github.fracpete</groupId>
         <artifactId>debian-maven-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
         <configuration>
           <skip>true</skip>
         </configuration>
