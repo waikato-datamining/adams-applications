@@ -323,7 +323,7 @@
                 </entry>
                 <entry>
                   <collect>
-                    <from>${project.basedir}/target/jars</from>
+                    <from>${project.basedir}/target/linux-jars</from>
                   </collect>
                   <name>/usr/lib/${project.name}</name>
                 </entry>
