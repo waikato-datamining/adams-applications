@@ -304,6 +304,87 @@
           </packageDependencies>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>com.github.fracpete</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>rpm</goal>
+            </goals>
+            <configuration>
+              <skip>false</skip>
+              <attach>false</attach>
+              <entries>
+                <entry>
+                  <file>${project.basedir}/target/scripts-debian/debian-gui</file>
+                  <name>/usr/bin/${project.name}-gui</name>
+                  <user>root</user>
+                  <group>root</group>
+                  <mode>0755</mode>
+                  <filterFile>true</filterFile>
+                </entry>
+                <entry>
+                  <file>${project.basedir}/target/scripts-debian/debian-daemon</file>
+                  <name>/usr/bin/${project.name}-daemon</name>
+                  <user>root</user>
+                  <group>root</group>
+                  <mode>0755</mode>
+                  <filterFile>true</filterFile>
+                </entry>
+                <entry>
+                  <file>${project.basedir}/target/scripts-debian/debian-exec</file>
+                  <name>/usr/bin/${project.name}-exec</name>
+                  <user>root</user>
+                  <group>root</group>
+                  <mode>0755</mode>
+                  <filterFile>true</filterFile>
+                </entry>
+                <entry>
+                  <file>${project.basedir}/target/scripts-debian/debian-gui.svg</file>
+                  <name>/usr/share/pixmaps/${project.name}.svg</name>
+                  <user>root</user>
+                  <group>root</group>
+                  <mode>0644</mode>
+                  <filterFile>false</filterFile>
+                </entry>
+                <entry>
+                  <file>${project.basedir}/target/scripts-debian/debian-gui.desktop</file>
+                  <name>/usr/share/pixmaps/${project.name}.desktop</name>
+                  <user>root</user>
+                  <group>root</group>
+                  <mode>0644</mode>
+                  <filterFile>true</filterFile>
+                </entry>
+                <entry>
+                  <collect>
+                    <from>${project.basedir}/target/linux-jars</from>
+                  </collect>
+                  <name>/usr/lib/${project.name}</name>
+                </entry>
+                <entry>
+                  <collect>
+                    <from>${project.basedir}/target/sources</from>
+                  </collect>
+                  <name>/usr/lib/${project.name}/src</name>
+                </entry>
+                <entry>
+                  <collect>
+                    <from>${project.basedir}/target/doc/docs</from>
+                  </collect>
+                  <name>/usr/share/doc/${project.name}</name>
+                </entry>
+              </entries>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <signature>
+            <skip>true</skip>
+          </signature>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
