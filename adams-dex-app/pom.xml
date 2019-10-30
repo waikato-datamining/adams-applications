@@ -290,6 +290,14 @@
                   <filterFile>true</filterFile>
                 </entry>
                 <entry>
+                  <file>${project.basedir}/target/scripts-debian/debian-daemon</file>
+                  <name>/usr/bin/${project.name}-daemon</name>
+                  <user>root</user>
+                  <group>root</group>
+                  <mode>0755</mode>
+                  <filterFile>true</filterFile>
+                </entry>
+                <entry>
                   <file>${project.basedir}/target/scripts-debian/debian-exec</file>
                   <name>/usr/bin/${project.name}-exec</name>
                   <user>root</user>
