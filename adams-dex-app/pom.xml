@@ -223,7 +223,6 @@
             <param>.*:ios-arm64</param>
             <param>.*:ios-x86_64</param>
             <param>.*:linux-x86</param>
-            <param>.*:linux-x86_64</param>
             <param>.*:linux-ppc64le</param>
             <param>.*:macosx-x86_64</param>
             <param>.*:windows-x86</param>
