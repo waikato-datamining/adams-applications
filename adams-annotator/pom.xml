@@ -294,6 +294,8 @@
             <param>.*:windows-x86</param>
             <param>.*:windows-x86_64</param>
             <param>.*:linux-armhf</param>
+            <param>.*:rsync4j-windows-x86:.*</param>
+            <param>.*:scripts</param>
           </excludeArtifactsRegExp>
           <useDefaultCopyResources>false</useDefaultCopyResources>
           <copyResources>
