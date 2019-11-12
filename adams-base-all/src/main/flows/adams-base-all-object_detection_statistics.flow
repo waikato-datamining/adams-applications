@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2019-11-13 09:21:11
+# Date: 2019-11-13 09:42:52
 # User: habdelqa
 # Charset: UTF-8
 # Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-json,adams-jython,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
@@ -62,6 +62,8 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
    adams.flow.sink.DisplayPanelManager -display-type adams.flow.core.displaytype.Default -width 740 -x -3 -provider "adams.flow.sink.SpreadSheetDisplay -display-type adams.flow.core.displaytype.Default -cell-rendering-customizer \"adams.gui.core.spreadsheettable.ConfusionMatrixCellRenderingCustomizer -value-based-background true -background-color-generator \\\"adams.gui.visualization.core.BiColorGenerator -first-color #ffffff -second-color #ff0000 -alpha 128\\\"\" -writer adams.data.io.output.NullWriter" -entry-name-variable entry -allow-search true
  adams.flow.standalone.SetVariable -var-name restore_file -var-value @{flow_filename_long}.props -expand-value true
  adams.flow.standalone.SetVariable -name "SetVariable (2)" -var-name predicted_num -var-value 0
+ adams.flow.standalone.SetVariable -name "SetVariable (3)" -var-name overlap_perc -var-value 0
+ adams.flow.standalone.SetVariable -name "SetVariable (4)" -var-name matching_perc -var-value 0
  adams.flow.source.Start
  adams.flow.control.Trigger -name "prompt user"
   adams.flow.source.EnterManyValues -stop-if-canceled true -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name annotations_dir -display \"Directory with Annotations Report Files\" -help \"top level directory of annotations report files\" -type DIRECTORY_ABSOLUTE -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name test_dir -display \"Test Directory with Results CSV Files\" -type DIRECTORY_ABSOLUTE -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name output_dir -display \"Output Directory \" -help \"directroy to store output statistics\" -type DIRECTORY_ABSOLUTE -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name labels -display \"Comma seperated labels to include\" -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_score -display \"Min Score\" -help \"value for min score to consider for predicted objects\" -type DOUBLE -default-value 0" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name max_size -display \"Max Size\" -help \"value for max width and height to filter predicted objects. -1 for unbound.\" -type INTEGER -default-value -1" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_overlap_removal -display \"Min Overlap Removal\" -help \"minimum perc of overlapping objects to remove (0-1)\" -type DOUBLE -default-value 0.9" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_overlap -display \"Min Overlap of Objects\" -help \"minimum perc of overlapping objects to consider same (0-1)\" -type DOUBLE -default-value 0.9" -output-type MAP -restoration-enabled true -restoration-file @{restore_file}
@@ -372,6 +374,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
     adams.flow.control.Trigger -name matching
      adams.flow.standalone.SetVariable -name matching_num -var-name matching_num -var-value 0
      adams.flow.standalone.SetVariable -name num_objects -var-name num_objects -var-value 0
+     adams.flow.standalone.SetVariable -var-name matching_perc -var-value 0
      adams.flow.standalone.SetVariable -name "actual num col" -var-name act_num_col -var-value @{class}_overlap_num -expand-value true
      adams.flow.standalone.SetVariable -name "matching num col" -var-name num_col -var-value @{class}_matching_num -expand-value true
      adams.flow.standalone.SetVariable -name "perc col" -var-name perc_col -var-value @{class}_matching_perc -expand-value true
