@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2019-11-13 13:19:38
+# Date: 2019-11-18 11:26:19
 # User: habdelqa
 # Charset: UTF-8
 # Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-json,adams-jython,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
@@ -470,7 +470,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
     adams.flow.control.Trigger -name "add prediction to confusion matrix"
      adams.flow.source.StorageValue -storage-name confmatrix -conversion adams.data.conversion.UnknownToUnknown
      adams.flow.transformer.SpreadSheetInsertRow -no-copy true -after true
-     adams.flow.transformer.SpreadSheetSetCell -name file -no-copy true -row last -col File -finder adams.data.spreadsheet.cellfinder.CellRange -value @{name} -force-string true
+     adams.flow.transformer.SpreadSheetSetCell -name file -no-copy true -row last -col File -finder adams.data.spreadsheet.cellfinder.CellRange -value @{image} -force-string true
      adams.flow.transformer.SpreadSheetSetCell -name actual -no-copy true -row last -col Actual -finder adams.data.spreadsheet.cellfinder.CellRange -value @{actual} -force-string true
      adams.flow.transformer.SpreadSheetSetCell -name predicted -no-copy true -row last -col Predicted -finder adams.data.spreadsheet.cellfinder.CellRange -value @{predicted} -force-string true
      adams.flow.transformer.SpreadSheetSetCell -name probability -no-copy true -row last -col Probability -finder adams.data.spreadsheet.cellfinder.CellRange -value @{overlap}
@@ -518,9 +518,6 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
   adams.flow.control.Tee -name "overall (row perc)"
    adams.flow.transformer.SetVariable -var-name entry -var-value "overall percentage"
    adams.flow.transformer.ConfusionMatrix -actual-column Actual -predicted-column Predicted -matrix-values PERCENTAGES_PER_ROW
-   adams.flow.control.ConditionalTee -name "better accuracy?" -condition "adams.flow.condition.bool.Expression -expression \"@{accuracy_total} > @{best_accuracy}\""
-    adams.flow.transformer.SetVariable -var-name best_accuracy -var-value @{accuracy_total}
-    adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name best_min_score -var-value @{min_score}
    adams.flow.sink.CallableSink -callable "save and display confmatrix"
   adams.flow.control.Tee -name "per file"
    adams.flow.transformer.SpreadSheetSubsetByValue
