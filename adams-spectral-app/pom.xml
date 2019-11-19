@@ -470,6 +470,19 @@
           </signature>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>nz.ac.waikato.cms.adams</groupId>
+        <artifactId>adams-maven-plugin</artifactId>
+        <version>${adams.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>classlister</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
