@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2019-11-18 15:08:23
+# Date: 2019-11-22 10:19:25
 # User: habdelqa
 # Charset: UTF-8
 # Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-json,adams-jython,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
@@ -216,7 +216,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
    adams.flow.transformer.SetVariable -var-name image
    adams.flow.transformer.StringInsert -after true -value -rois_csv_report
    adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name report_storage_name
-  adams.flow.control.ConditionalTee -name "Available csv?" -condition "adams.flow.condition.bool.Not -condition \"adams.flow.condition.bool.HasStorageValue -storage-name @{report_storage_name}\""
+  adams.flow.control.ConditionalTee -name "Missing csv?" -condition "adams.flow.condition.bool.Not -condition \"adams.flow.condition.bool.HasStorageValue -storage-name @{report_storage_name}\""
    adams.flow.transformer.SetVariable -var-name missing_csv -var-value "Image @{image} has no pred csv!" -expand-value true
   adams.flow.control.ConditionalTrigger -name "Show missing message?" -condition "adams.flow.condition.bool.Not -condition \"adams.flow.condition.bool.HasStorageValue -storage-name @{report_storage_name}\""
    adams.flow.source.Variable -var-name missing_csv -conversion adams.data.conversion.StringToString
@@ -231,7 +231,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
    adams.flow.transformer.SetVariable -var-name image
    adams.flow.transformer.StringInsert -after true -value -rois_csv_report
    adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name report_storage_name
-  adams.flow.control.ConditionalTee -name "Available report?" -condition "adams.flow.condition.bool.Not -condition \"adams.flow.condition.bool.HasStorageValue -storage-name @{image}\""
+  adams.flow.control.ConditionalTee -name "Missing report?" -condition "adams.flow.condition.bool.Not -condition \"adams.flow.condition.bool.HasStorageValue -storage-name @{image}\""
    adams.flow.transformer.SetVariable -var-name missing_report -var-value "Image @{image} has no annotations report!" -expand-value true
   adams.flow.control.ConditionalTrigger -name "Show missing message?" -condition "adams.flow.condition.bool.Not -condition \"adams.flow.condition.bool.HasStorageValue -storage-name @{image}\""
    adams.flow.source.Variable -var-name missing_report -conversion adams.data.conversion.StringToString
@@ -314,7 +314,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
     adams.flow.standalone.SetVariable -name "reset overlap_num" -var-name overlap_num -var-value 0
     adams.flow.standalone.SetVariable -name "reset fn_num" -var-name fn_num -var-value 0
     adams.flow.source.StorageValue -storage-name @{image} -conversion adams.data.conversion.UnknownToUnknown
-    adams.flow.transformer.ImageObjectOverlap -storage-name @{report_storage_name} -finder adams.data.objectfinder.AllFinder -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true
+    adams.flow.transformer.DetermineOverlappingObjects -storage-name @{report_storage_name} -finder adams.data.objectfinder.AllFinder -algorithm "adams.data.objectoverlap.AreaRatio -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true"
     adams.flow.transformer.DeleteOverlappingImageObjects -logging-level INFO -finder adams.data.objectfinder.AllFinder -min-overlap-ratio @{min_overlap_removal} -duplicate-indices true
     adams.flow.control.Tee -name "count overlaps"
      adams.flow.transformer.GetImageObjects -finder adams.data.objectfinder.AllFinder
@@ -378,7 +378,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
    adams.flow.control.Trigger -name matching
     adams.flow.standalone.SetVariable -name matching_num -var-name matching_num -var-value 0
     adams.flow.source.StorageValue -storage-name @{image} -conversion adams.data.conversion.UnknownToUnknown
-    adams.flow.transformer.ImageObjectOverlap -storage-name @{report_storage_name} -finder adams.data.objectfinder.AllFinder -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true
+    adams.flow.transformer.DetermineOverlappingObjects -storage-name @{report_storage_name} -finder adams.data.objectfinder.AllFinder -algorithm "adams.data.objectoverlap.AreaRatio -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true"
     adams.flow.transformer.DeleteOverlappingImageObjects -finder adams.data.objectfinder.AllFinder -min-overlap-ratio @{min_overlap_removal} -duplicate-indices true
     adams.flow.control.Tee -name "count matches"
      adams.flow.transformer.GetImageObjects -finder adams.data.objectfinder.AllFinder
@@ -418,7 +418,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
      adams.flow.standalone.SetVariable -name "matching num col" -var-name num_col -var-value @{class}_matching_num -expand-value true
      adams.flow.standalone.SetVariable -name "perc col" -var-name perc_col -var-value @{class}_matching_perc -expand-value true
      adams.flow.source.StorageValue -storage-name @{image} -conversion adams.data.conversion.UnknownToUnknown
-     adams.flow.transformer.ImageObjectOverlap -storage-name @{report_storage_name} -finder "adams.data.objectfinder.ByMetaDataStringValue -key type -regexp @{class_regexp}" -min-overlap-ratio @{min_overlap} -label-key type
+     adams.flow.transformer.DetermineOverlappingObjects -storage-name @{report_storage_name} -finder "adams.data.objectfinder.ByMetaDataStringValue -key type -regexp @{class_regexp}" -algorithm "adams.data.objectoverlap.AreaRatio -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true"
      adams.flow.transformer.DeleteOverlappingImageObjects -finder adams.data.objectfinder.AllFinder -min-overlap-ratio @{min_overlap_removal} -duplicate-indices true
      adams.flow.control.Tee -name "count matches"
       adams.flow.transformer.GetImageObjects -finder adams.data.objectfinder.AllFinder
@@ -445,7 +445,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
     adams.flow.transformer.SetStorageValue -storage-name stats
    adams.flow.control.Trigger -name "confusion matrix"
     adams.flow.source.StorageValue -storage-name @{image} -conversion adams.data.conversion.UnknownToUnknown
-    adams.flow.transformer.ImageObjectOverlap -storage-name @{report_storage_name} -finder adams.data.objectfinder.AllFinder -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true -additional-object true
+    adams.flow.transformer.DetermineOverlappingObjects -storage-name @{report_storage_name} -finder adams.data.objectfinder.AllFinder -algorithm "adams.data.objectoverlap.AreaRatio -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true -additional-object true"
     adams.flow.transformer.DeleteOverlappingImageObjects -finder adams.data.objectfinder.AllFinder -min-overlap-ratio @{min_overlap_removal} -duplicate-indices true
     adams.flow.transformer.GetImageObjects -finder adams.data.objectfinder.AllFinder
     adams.flow.transformer.GetImageObjectMetaData
