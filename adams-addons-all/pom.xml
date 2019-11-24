@@ -187,6 +187,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- groovy-rest -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-groovy-rest</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-groovy-rest</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- groovy-webservice -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
