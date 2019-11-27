@@ -360,6 +360,24 @@
                 </entry>
                 <entry>
                   <collect>
+                    <from>${project.basedir}/target</from>
+                    <includes>
+                      <include>${project.artifactId}-${project.version}.jar</include>
+                    </includes>
+                  </collect>
+                  <name>/usr/lib/${project.name}</name>
+                </entry>
+                <entry>
+                  <collect>
+                    <from>${project.basedir}/target</from>
+                    <includes>
+                      <include>${project.artifactId}-${project.version}-sources.jar</include>
+                    </includes>
+                  </collect>
+                  <name>/usr/lib/${project.name}/src</name>
+                </entry>
+                <entry>
+                  <collect>
                     <from>${project.basedir}/target/linux-jars</from>
                   </collect>
                   <name>/usr/lib/${project.name}</name>
