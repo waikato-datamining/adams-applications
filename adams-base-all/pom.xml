@@ -733,7 +733,7 @@
         </configuration>
       </plugin>
 
-      <!--plugin>
+      <plugin>
         <groupId>nz.ac.waikato.cms.adams</groupId>
         <artifactId>adams-maven-plugin</artifactId>
         <version>${adams.version}</version>
@@ -744,7 +744,7 @@
             </goals>
           </execution>
         </executions>
-      </plugin-->
+      </plugin>
     </plugins>
   </build>
 </project>
