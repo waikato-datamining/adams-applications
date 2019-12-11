@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2019-12-11 10:51:16
+# Date: 2019-12-11 13:01:28
 # User: habdelqa
 # Charset: UTF-8
 # Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-json,adams-jython,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
@@ -77,7 +77,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
   adams.flow.source.Variable -var-name labels -conversion adams.data.conversion.StringToString
   adams.flow.transformer.StringSplit -expression ,
   adams.flow.transformer.SetStorageValue -storage-name classes
-  adams.flow.transformer.SetVariable -name "init stats cols" -var-name stats_columns -var-value image,actual_num,predicted_num,overlap_num,fp_num,fn_num,overlap_perc,matching_num,matching_perc,accuracy -expand-value true
+  adams.flow.transformer.SetVariable -name "init stats cols" -var-name stats_columns -var-value image,actual_num,predicted_num,overlap_num,fn_num,overlap_perc,matching_num,matching_perc -expand-value true
   adams.flow.control.Tee -name "iterate classes"
    adams.flow.transformer.ArrayToSequence
    adams.flow.transformer.SetVariable -var-name class
@@ -361,17 +361,12 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
          adams.flow.transformer.SetStorageValue -storage-name @{combined_report_storage_name}
      adams.flow.control.ConditionalTee -name "inc fn_num" -condition "adams.flow.condition.bool.Expression -expression \"@{overlap_count} = 0\""
       adams.flow.transformer.IncVariable -var-name fn_num
-   adams.flow.control.Trigger -name "FP num"
-    adams.flow.source.MathExpression -expression @{predicted_num}-@{overlap_num}
-    adams.flow.transformer.Convert -conversion adams.data.conversion.DoubleToInt
-    adams.flow.transformer.SetVariable -var-name fp_num
    adams.flow.control.ConditionalTrigger -name "overlap perc" -condition "adams.flow.condition.bool.Expression -expression \"@{predicted_num} > 0\""
     adams.flow.source.MathExpression -expression "@{overlap_num} / @{predicted_num}"
     adams.flow.transformer.SetVariable -var-name overlap_perc
    adams.flow.control.Trigger -name "add stats"
     adams.flow.source.StorageValue -storage-name stats -conversion adams.data.conversion.UnknownToUnknown
     adams.flow.transformer.SpreadSheetSetCell -name overlap_num -no-copy true -row last -col overlap_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{overlap_num}
-    adams.flow.transformer.SpreadSheetSetCell -name fp_num -no-copy true -row last -col fp_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{fp_num}
     adams.flow.transformer.SpreadSheetSetCell -name overlap_perc -no-copy true -row last -col overlap_perc -finder adams.data.spreadsheet.cellfinder.CellRange -value @{overlap_perc}
     adams.flow.transformer.SetStorageValue -storage-name stats
    adams.flow.control.Trigger -name matching
@@ -394,15 +389,11 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
    adams.flow.control.ConditionalTrigger -name percentage -condition "adams.flow.condition.bool.Expression -expression \"@{overlap_num} > 0\""
     adams.flow.source.MathExpression -expression "@{matching_num} / @{overlap_num}"
     adams.flow.transformer.SetVariable -var-name matching_perc
-   adams.flow.control.ConditionalTrigger -name accuracy -condition "adams.flow.condition.bool.Expression -expression \"@{matching_num} > 0 | @{fp_num} > 0 | @{fn_num} > 0\""
-    adams.flow.source.MathExpression -expression "@{matching_num} / (@{matching_num}+@{fp_num}+@{fn_num})"
-    adams.flow.transformer.SetVariable -var-name accuracy
    adams.flow.control.Trigger -name "add stats (2)"
     adams.flow.source.StorageValue -storage-name stats -conversion adams.data.conversion.UnknownToUnknown
     adams.flow.transformer.SpreadSheetSetCell -name fn_num -no-copy true -row last -col fn_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{fn_num}
     adams.flow.transformer.SpreadSheetSetCell -name matching_num -no-copy true -row last -col matching_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{matching_num}
     adams.flow.transformer.SpreadSheetSetCell -name matching_perc -no-copy true -row last -col matching_perc -finder adams.data.spreadsheet.cellfinder.CellRange -value @{matching_perc}
-    adams.flow.transformer.SpreadSheetSetCell -name accuracy -no-copy true -row last -col accuracy -finder adams.data.spreadsheet.cellfinder.CellRange -value @{accuracy}
     adams.flow.transformer.SetStorageValue -storage-name stats
    adams.flow.control.Trigger -name "matching per label"
     adams.flow.source.StorageValue -storage-name classes -conversion adams.data.conversion.UnknownToUnknown
@@ -433,15 +424,15 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
        adams.flow.transformer.SetVariable -var-name overlap_label_highest_match
       adams.flow.control.ConditionalTee -name "inc matching_num" -condition "adams.flow.condition.bool.Expression -expression \"(@{overlap_count} > 0) and (@{overlap_label_highest_match} = true)\""
        adams.flow.transformer.IncVariable -var-name matching_num
-   adams.flow.control.ConditionalTrigger -name "percentage (2)" -condition "adams.flow.condition.bool.Expression -expression \"@{num_objects} > 0\""
-    adams.flow.source.MathExpression -expression "@{matching_num} / @{num_objects}"
-    adams.flow.transformer.SetVariable -var-name matching_perc
-   adams.flow.control.Trigger -name "add stats (3)"
-    adams.flow.source.StorageValue -storage-name stats -conversion adams.data.conversion.UnknownToUnknown
-    adams.flow.transformer.SpreadSheetSetCell -name actual_num -no-copy true -row last -col @{act_num_col} -finder adams.data.spreadsheet.cellfinder.CellRange -value @{num_objects}
-    adams.flow.transformer.SpreadSheetSetCell -name matching_num -no-copy true -row last -col @{num_col} -finder adams.data.spreadsheet.cellfinder.CellRange -value @{matching_num}
-    adams.flow.transformer.SpreadSheetSetCell -name matching_perc -no-copy true -row last -col @{perc_col} -finder adams.data.spreadsheet.cellfinder.CellRange -value @{matching_perc}
-    adams.flow.transformer.SetStorageValue -storage-name stats
+    adams.flow.control.ConditionalTrigger -name percentage -condition "adams.flow.condition.bool.Expression -expression \"@{num_objects} > 0\""
+     adams.flow.source.MathExpression -expression "@{matching_num} / @{num_objects}"
+     adams.flow.transformer.SetVariable -var-name matching_perc
+    adams.flow.control.Trigger -name "add stats"
+     adams.flow.source.StorageValue -storage-name stats -conversion adams.data.conversion.UnknownToUnknown
+     adams.flow.transformer.SpreadSheetSetCell -name actual_num -no-copy true -row last -col @{act_num_col} -finder adams.data.spreadsheet.cellfinder.CellRange -value @{num_objects}
+     adams.flow.transformer.SpreadSheetSetCell -name matching_num -no-copy true -row last -col @{num_col} -finder adams.data.spreadsheet.cellfinder.CellRange -value @{matching_num}
+     adams.flow.transformer.SpreadSheetSetCell -name matching_perc -no-copy true -row last -col @{perc_col} -finder adams.data.spreadsheet.cellfinder.CellRange -value @{matching_perc}
+     adams.flow.transformer.SetStorageValue -storage-name stats
    adams.flow.control.Trigger -name "confusion matrix"
     adams.flow.source.StorageValue -storage-name @{image} -conversion adams.data.conversion.UnknownToUnknown
     adams.flow.transformer.DetermineOverlappingObjects -storage-name @{report_storage_name} -finder adams.data.objectfinder.AllFinder -algorithm "adams.data.objectoverlap.AreaRatio -min-overlap-ratio @{min_overlap} -label-key type -use-other-object true -additional-object true"
@@ -476,12 +467,6 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
      adams.flow.transformer.SetStorageValue -storage-name confmatrix
  adams.flow.control.Trigger -name Total
   adams.flow.source.StorageValue -storage-name stats -conversion adams.data.conversion.UnknownToUnknown
-  adams.flow.control.Tee -name "fp num total"
-   adams.flow.transformer.SpreadSheetColumnStatistic -column fp_num -statistic adams.data.spreadsheet.colstatistic.Sum
-   adams.flow.transformer.SpreadSheetGetCell -row last -col last
-   adams.flow.transformer.Convert -conversion adams.data.conversion.StringToDouble
-   adams.flow.transformer.Convert -name "Convert (2)" -conversion adams.data.conversion.DoubleToInt
-   adams.flow.transformer.SetVariable -var-name fp_num_total
   adams.flow.control.Tee -name "fn num total"
    adams.flow.transformer.SpreadSheetColumnStatistic -column fn_num -statistic adams.data.spreadsheet.colstatistic.Sum
    adams.flow.transformer.SpreadSheetGetCell -row last -col last
@@ -494,16 +479,11 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
    adams.flow.transformer.Convert -conversion adams.data.conversion.StringToDouble
    adams.flow.transformer.Convert -name "Convert (2)" -conversion adams.data.conversion.DoubleToInt
    adams.flow.transformer.SetVariable -var-name matching_num_total
-  adams.flow.control.Trigger -name "Total accuracy"
-   adams.flow.source.MathExpression -expression "@{matching_num_total} / (@{matching_num_total}+@{fp_num_total}+@{fn_num_total})"
-   adams.flow.transformer.SetVariable -var-name accuracy_total
   adams.flow.transformer.SpreadSheetInsertRow -name "SpreadSheetInsertRow (2)" -after true
   adams.flow.transformer.SpreadSheetInsertRow -after true
   adams.flow.transformer.SpreadSheetSetCell -name image -no-copy true -row last -col image -finder adams.data.spreadsheet.cellfinder.SingleCell -value TOTAL
   adams.flow.transformer.SpreadSheetSetCell -name matching_num_total -no-copy true -row last -col matching_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{matching_num_total}
-  adams.flow.transformer.SpreadSheetSetCell -name fp_num_total -no-copy true -row last -col fp_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{fp_num_total}
   adams.flow.transformer.SpreadSheetSetCell -name fn_num_total -no-copy true -row last -col fn_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{fn_num_total}
-  adams.flow.transformer.SpreadSheetSetCell -name accuracy_total -no-copy true -row last -col accuracy -finder adams.data.spreadsheet.cellfinder.CellRange -value @{accuracy_total}
   adams.flow.transformer.SetStorageValue -storage-name stats
  adams.flow.control.Trigger -name "display stats"
   adams.flow.source.StorageValue -storage-name stats -conversion adams.data.conversion.UnknownToUnknown
