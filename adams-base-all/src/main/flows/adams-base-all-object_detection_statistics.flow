@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2019-12-11 13:01:28
+# Date: 2019-12-17 11:08:56
 # User: habdelqa
 # Charset: UTF-8
 # Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-json,adams-jython,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
@@ -65,7 +65,7 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
  adams.flow.standalone.SetVariable -name "SetVariable (3)" -var-name overlap_perc -var-value 0
  adams.flow.standalone.SetVariable -name "SetVariable (4)" -var-name matching_perc -var-value 0
  adams.flow.standalone.SetVariable -name "SetVariable (5)" -var-name no_reports -var-value true -value-type BOOL_EXPRESSION
- adams.flow.standalone.SetVariable -name "SetVariable (6)" -var-name no_csv -var-value true -value-type BOOL_EXPRESSION
+ adams.flow.standalone.SetVariable -name "SetVariable (6)" -var-name first_class -var-value true -value-type BOOL_EXPRESSION
  adams.flow.source.Start
  adams.flow.control.Trigger -name "prompt user"
   adams.flow.source.EnterManyValues -stop-if-canceled true -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name annotations_dir -display \"Directory with Annotations Report Files\" -help \"top level directory of annotations report files\" -type DIRECTORY_ABSOLUTE -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name test_dir -display \"Test Directory with Results CSV Files\" -type DIRECTORY_ABSOLUTE -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name output_dir -display \"Output Directory \" -help \"directroy to store output statistics\" -type DIRECTORY_ABSOLUTE -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name labels -display \"Comma seperated labels to include\" -default-value ." -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_score -display \"Min Score\" -help \"value for min score to consider for predicted objects\" -type DOUBLE -default-value 0" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name max_size -display \"Max Size\" -help \"value for max width and height to filter predicted objects. -1 for unbound.\" -type INTEGER -default-value -1" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_overlap_removal -display \"Min Overlap Removal\" -help \"minimum perc of overlapping objects to remove (0-1)\" -type DOUBLE -default-value 0.9" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_overlap -display \"Min Overlap of Objects\" -help \"minimum perc of overlapping objects to consider same (0-1)\" -type DOUBLE -default-value 0.9" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name copy_imgs -display \"Copy Images\" -help \"check to copy images to output directory\" -type BOOLEAN -default-value false" -output-type MAP -restoration-enabled true -restoration-file @{restore_file}
@@ -82,6 +82,12 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
    adams.flow.transformer.ArrayToSequence
    adams.flow.transformer.SetVariable -var-name class
    adams.flow.transformer.SetVariable -name "append stats cols" -var-name stats_columns -var-value ,@{class}_overlap_num,@{class}_matching_num,@{class}_matching_perc -update-type APPEND -expand-value true
+   adams.flow.control.ConditionalTee -name "Not first class?" -condition "adams.flow.condition.bool.Not -condition \"adams.flow.condition.bool.Expression -expression (@{first_class})\""
+    adams.flow.transformer.SetVariable -name "Append classes regex" -var-name classes_regex -var-value |@{class} -update-type APPEND -expand-value true
+   adams.flow.control.ConditionalTee -name "First class?" -condition "adams.flow.condition.bool.Expression -expression (@{first_class})"
+    adams.flow.transformer.SetVariable -name "Init classes regex" -var-name classes_regex -var-value @{class} -expand-value true
+    adams.flow.transformer.SetVariable -var-name first_class -var-value false -value-type BOOL_EXPRESSION
+  adams.flow.transformer.SetVariable -var-name classes_regex -var-value ^((?!@{classes_regex}).)*$ -expand-value true
  adams.flow.control.Trigger -name "Iterate Annotations report files"
   adams.flow.standalone.SetVariable -name "progressbar title" -var-name title -var-value "report files"
   adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory @{annotations_dir} -regexp .*.report -sorting SORT_BY_NAME"
@@ -140,11 +146,12 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
     adams.flow.transformer.StringInsert -after true -value _report
     adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name report_storage_name
    adams.flow.transformer.SpreadSheetFileReader -reader "adams.data.io.input.CsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet"
-   adams.flow.control.Trigger -name "Init report"
+   adams.flow.control.Trigger -name "Init filtered report"
     adams.flow.source.NewReport
     adams.flow.transformer.SetStorageValue -storage-name @{report_storage_name}
    adams.flow.control.ConditionalTee -name "Generate report" -condition adams.flow.condition.bool.HasRows
     adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.ByNumericValue -att-index score -minimum @{min_score} -minimum-included true -maximum 1.0 -maximum-included true"
+    adams.flow.transformer.SpreadSheetReplaceCellValue -find @{classes_regex} -replace ??? -all true -position label_str
     adams.flow.transformer.SetStorageValue -storage-name @{csv_storage_name}
     adams.flow.transformer.CallableTransformer -callable "parse locations"
  adams.flow.control.ConditionalTee -name "No csv found?" -condition "adams.flow.condition.bool.Expression -expression (@{no_csv})"
@@ -240,11 +247,11 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
   adams.flow.control.Tee -name "Image name"
    adams.flow.transformer.BaseName -remove-extensions true
    adams.flow.transformer.StringReplace -find "\\\\b \\\\b" -replace _ -type ALL
-   adams.flow.transformer.StringReplace -name "StringReplace (2)" -find -rois -type ALL
-   adams.flow.transformer.SetVariable -var-name image
-   adams.flow.transformer.StringInsert -after true -value -rois_csv_report
+   adams.flow.transformer.StringInsert -after true -value _csv_report
    adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name report_storage_name
-   adams.flow.transformer.StringInsert -name "StringInsert (2)" -after true -value _combined
+   adams.flow.transformer.StringReplace -name "StringReplace (2)" -find -rois_csv_report -type ALL
+   adams.flow.transformer.SetVariable -var-name image
+   adams.flow.transformer.StringInsert -name "StringInsert (2)" -after true -value _csv_report_combined
    adams.flow.transformer.SetVariable -name "SetVariable (3)" -var-name combined_report_storage_name
   adams.flow.control.Trigger -name "remove overlaps"
    adams.flow.source.StorageValue -storage-name @{report_storage_name} -conversion adams.data.conversion.UnknownToUnknown
@@ -306,8 +313,12 @@ adams.flow.control.Flow -annotation "Generates statistics for image object annot
     adams.flow.transformer.SetVariable -name set -var-name predicted_num
    adams.flow.control.Trigger -name "add actual and predicted num to stats"
     adams.flow.source.StorageValue -storage-name stats -conversion adams.data.conversion.UnknownToUnknown
-    adams.flow.transformer.SpreadSheetSetCell -name actual_num -no-copy true -row last -col actual_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{actual_num}
-    adams.flow.transformer.SpreadSheetSetCell -name predicted_num -no-copy true -row last -col predicted_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{predicted_num}
+    adams.flow.control.Switch -condition "adams.flow.condition.bool.HasVariable -variable-name actual_num"
+     adams.flow.transformer.SpreadSheetSetCell -name actual_num -no-copy true -row last -col actual_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{actual_num}
+     adams.flow.transformer.SpreadSheetSetCell -name zero_actual_num -no-copy true -row last -col actual_num -finder adams.data.spreadsheet.cellfinder.CellRange -value 0
+    adams.flow.control.Switch -name "Switch (2)" -condition "adams.flow.condition.bool.HasVariable -variable-name predicted_num"
+     adams.flow.transformer.SpreadSheetSetCell -name predicted_num -no-copy true -row last -col predicted_num -finder adams.data.spreadsheet.cellfinder.CellRange -value @{predicted_num}
+     adams.flow.transformer.SpreadSheetSetCell -name zero_predicted_num -no-copy true -row last -col predicted_num -finder adams.data.spreadsheet.cellfinder.CellRange -value 0
     adams.flow.transformer.SetStorageValue -storage-name stats
    adams.flow.control.Trigger -name overlap
     adams.flow.standalone.SetVariable -name "reset overlap_num" -var-name overlap_num -var-value 0
