@@ -1,7 +1,9 @@
 # Project: adams
-# Date: 2016-05-06 14:28:01
+# Date: 2019-12-19 11:42:58
 # User: fracpete
 # Charset: UTF-8
+# Modules: adams-annotator,adams-core,adams-excel,adams-ffmpeg,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-openimaj,adams-json,adams-math,adams-ml,adams-odf,adams-pdf,adams-python,adams-random,adams-spreadsheet,adams-video,adams-visualstats,adams-weka,adams-xml
+#
 adams.flow.control.Flow -annotation "Let\\\'s the user select an initial object to be tracked." -flow-execution-listener adams.flow.execution.NullListener
  adams.flow.standalone.CallableActors
   adams.flow.sink.ImageViewer -name Frame -short-title true -writer adams.gui.print.NullWriter -zoom -1.0 -selection-processor adams.gui.visualization.image.selection.NullProcessor -image-overlay "adams.gui.visualization.image.QuadrilateralLocationsOverlayFromReport -regexp Tracker\\\\.Current"
@@ -26,7 +28,7 @@ adams.flow.control.Flow -annotation "Let\\\'s the user select an initial object 
     adams.flow.transformer.Convert -name Convert-1 -conversion "adams.data.conversion.DateTimeTypeToString -datetime-type MSECS -format \"yyyy-MM-dd hh:mm:ss.SSS\""
     adams.flow.transformer.SetVariable -var-name timestamp_long
   adams.flow.control.Once -name "select object"
-   adams.flow.control.Inspect -provider "adams.flow.sink.ImageViewer -writer adams.gui.print.NullWriter -zoom -1.0 -selection-processor adams.gui.visualization.image.selection.SelectObjectToTrack -selection-box-color #ff0000 -image-overlay adams.gui.visualization.image.QuadrilateralLocationsOverlayFromReport" -close-dialog true
+   adams.flow.control.Inspect -provider "adams.flow.sink.ImageViewer -display-type adams.flow.core.displaytype.Default -writer adams.gui.print.NullWriter -zoom -1.0 -selection-processor adams.gui.visualization.image.selection.SelectObjectToTrack -left-click-processor adams.gui.visualization.image.leftclick.NullProcessor -selection-shape-painter \"adams.gui.visualization.image.selectionshape.RectanglePainter -color #ff0000\" -image-overlay adams.gui.visualization.image.QuadrilateralLocationsOverlayFromReport" -close-dialog true
    adams.flow.transformer.SetStorageValue -storage-name frame
   adams.flow.control.Once -name "create copy for map"
    adams.flow.transformer.Copy
