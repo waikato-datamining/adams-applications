@@ -1,7 +1,9 @@
 # Project: adams
-# Date: 2016-07-04 17:02:24
+# Date: 2019-12-19 11:16:23
 # User: fracpete
 # Charset: UTF-8
+# Modules: adams-access,adams-audio,adams-cntk,adams-cntk-weka,adams-compress,adams-core,adams-cqengine,adams-db,adams-event,adams-excel,adams-ffmpeg,adams-gnuplot,adams-groovy,adams-groovy-rest,adams-groovy-webservice,adams-heatmap,adams-html,adams-image-webservice,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jooq,adams-json,adams-jython,adams-latex,adams-maps,adams-math,adams-meka,adams-meka-webservice,adams-meta,adams-ml,adams-moa,adams-mongodb,adams-net,adams-nlp,adams-odf,adams-osm,adams-pdf,adams-python,adams-python-weka,adams-r,adams-rabbitmq,adams-rabbitmq-rats,adams-random,adams-rats-core,adams-rats-net,adams-rats-rest,adams-rats-webservice,adams-rest,adams-rsync,adams-security,adams-spreadsheet,adams-tensorflow,adams-terminal,adams-timeseries,adams-twitter,adams-twitter-rats,adams-video,adams-visualstats,adams-webservice,adams-webservice-core,adams-weka,adams-weka-nd4j,adams-weka-webservice,adams-xml,adams-yaml
+#
 adams.flow.control.Flow -annotation "Flow for collecting any tweets that can be obtained when\\nlistening to the public tweet \\\"garden hose\\\". The tweets\\nget collected in gzipped CSV files, one per day (\\\"day\\\" as \\ndefined by current locale) in the ${FLOWS}/output \\ndirectory.\\n\\nNB: Once decompressed, MS Excel has problems opening these files, but \\nLibreOffice Calc works.\\n\\nWARNING: Collection continues, until the flow is stopped." -error-handling ACTORS_DECIDE_TO_STOP_ON_ERROR -flow-execution-listener adams.flow.execution.NullListener
  adams.flow.standalone.TwitterConnection
  adams.flow.standalone.CallableActors
@@ -9,7 +11,7 @@ adams.flow.control.Flow -annotation "Flow for collecting any tweets that can be 
    adams.flow.source.Start
    adams.flow.transformer.Timestamp -format "\\\'${FLOWS}/output/tweets_\\\'yyyy-MM-dd\\\'.csv\\\'"
   adams.flow.sink.Display -name Progress -writer adams.data.io.output.NullWriter
- adams.flow.standalone.HashSetInit -storage-name csvfiles
+ adams.flow.standalone.HashSetInit -storage-name csvfiles -conversion adams.data.conversion.StringToString
  adams.flow.standalone.Events
   adams.flow.standalone.Cron -annotation "Checking every minute for new CSV files to gzip" -schedule "0 * * * * ?"
    adams.flow.source.HashSet -storage-name csvfiles
@@ -21,7 +23,7 @@ adams.flow.control.Flow -annotation "Flow for collecting any tweets that can be 
    adams.flow.control.Trigger -name "remove file from \"to-zip\" list"
     adams.flow.source.Variable -var-name Value
     adams.flow.transformer.HashSetRemove -storage-name csvfiles
- adams.flow.source.TwitterListener -max-updates 0
+ adams.flow.source.TwitterListener -listener "adams.flow.source.twitterlistener.SampleListener -max-updates 0"
  adams.flow.control.TriggerOnce -name "initial filename"
   adams.flow.source.CallableSource -callable filename
   adams.flow.transformer.SetVariable -name "initial filename" -var-name filename
