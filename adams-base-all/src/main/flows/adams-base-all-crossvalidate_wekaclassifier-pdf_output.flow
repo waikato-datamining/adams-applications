@@ -1,22 +1,26 @@
 # Project: adams
-# Modules: adams-access,adams-compress,adams-core,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jython,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka
-# Date: 2018-05-11 16:53:30
+# Date: 2019-12-19 11:48:29
 # User: fracpete
 # Charset: UTF-8
+# Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-json,adams-jython,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
+#
 adams.flow.control.Flow -annotation "Cross-validates a classifier and outputs\\nthe evaluation summary." -flow-execution-listener adams.flow.execution.NullListener
  adams.flow.standalone.CallableActors
   adams.flow.source.WekaClassifierSetup -name WekaClassifier -classifier "weka.classifiers.trees.J48 -C 0.25 -M 2"
+  adams.flow.sink.WekaThresholdCurve -display-type adams.flow.core.displaytype.Default -width 800 -height 600 -writer "adams.gui.print.PNGWriter -file ${TMP}/out.png"
  adams.flow.standalone.DeleteFile -dir ${TMP} -regexp out\\.(pdf|png|csv)
  adams.flow.source.FileSupplier -file ${FLOWS}/data/anneal.arff
  adams.flow.transformer.WekaFileReader -loader weka.core.converters.ArffLoader
  adams.flow.transformer.WekaClassSelector
  adams.flow.transformer.WekaCrossValidationEvaluator -output weka.classifiers.evaluation.output.prediction.Null -classifier WekaClassifier -generator weka.classifiers.DefaultCrossValidationFoldGenerator
- adams.flow.control.Branch
+ adams.flow.control.Branch -num-threads 1
   adams.flow.control.Sequence -name CSV
    adams.flow.transformer.WekaEvaluationValues
    adams.flow.sink.DumpFile -output ${TMP}/out.csv
   adams.flow.control.Sequence -name ROC
-   adams.flow.sink.WekaThresholdCurve -width 800 -height 600 -writer "adams.gui.print.PNGWriter -file ${TMP}/out.png"
+   adams.flow.control.Tee -name display
+    adams.flow.sink.CallableSink -callable WekaThresholdCurve
+   adams.flow.control.CallableActorScreenshot -callable WekaThresholdCurve -filename-generator "adams.core.io.SimpleFixedFilenameGenerator -name ${TMP}/out.png" -writer adams.gui.print.PNGWriter
   adams.flow.control.Sequence -name PDF
    adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory ${TMP} -regexp out\\\\.(csv|png)"
    adams.flow.transformer.Sort -comparator adams.core.DefaultCompare
