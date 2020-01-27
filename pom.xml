@@ -11,7 +11,7 @@
 
   <artifactId>adams-applications-pom</artifactId>
   <packaging>pom</packaging>
-  <version>20.1.1-SNAPSHOT</version>
+  <version>20.1.1</version>
 
   <name>adams-applications-pom</name>
   <description>The project object model for all custom ADAMS applications modules.</description>
@@ -42,7 +42,7 @@
     <connection>scm:git:https://github.com/waikato-datamining/adams-applications</connection>
     <developerConnection>scm:git:https://github.com/waikato-datamining/adams-applications</developerConnection>
     <url>https://github.com/waikato-datamining/adams-applications</url>
-    <tag>HEAD</tag>
+    <tag>adams-applications-pom-20.1.1</tag>
   </scm>
 
   <build>
