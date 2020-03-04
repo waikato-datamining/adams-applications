@@ -18,3 +18,5 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.original \
 RUN wget -O /tmp/adams-dex-app-snapshot.deb https://adams.cms.waikato.ac.nz/snapshots/adams/adams-dex-app-snapshot.deb \
     && dpkg -i /tmp/adams-dex-app-snapshot.deb \
     && rm /tmp/adams-dex-app-snapshot.deb
+
+COPY Placeholders.props /root/.adams/Placeholders.props

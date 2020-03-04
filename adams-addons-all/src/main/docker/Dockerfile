@@ -18,3 +18,5 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.original \
 RUN wget -O /tmp/adams-addons-all-snapshot.deb https://adams.cms.waikato.ac.nz/snapshots/adams/adams-addons-all-snapshot.deb \
     && dpkg -i /tmp/adams-addons-all-snapshot.deb \
     && rm /tmp/adams-addons-all-snapshot.deb
+
+COPY Placeholders.props /root/.adams/Placeholders.props
