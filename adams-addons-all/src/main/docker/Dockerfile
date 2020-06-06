@@ -19,4 +19,5 @@ RUN wget -O /tmp/adams-addons-all-snapshot.deb https://adams.cms.waikato.ac.nz/s
     && dpkg -i /tmp/adams-addons-all-snapshot.deb \
     && rm /tmp/adams-addons-all-snapshot.deb
 
+COPY bash.bashrc /etc/bash.bashrc
 COPY Placeholders.props /root/.adams/Placeholders.props

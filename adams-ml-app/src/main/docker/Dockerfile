@@ -19,4 +19,5 @@ RUN wget -O /tmp/adams-ml-app-snapshot.deb https://adams.cms.waikato.ac.nz/snaps
     && dpkg -i /tmp/adams-ml-app-snapshot.deb \
     && rm /tmp/adams-ml-app-snapshot.deb
 
+COPY bash.bashrc /etc/bash.bashrc
 COPY Placeholders.props /root/.adams/Placeholders.props

@@ -19,4 +19,5 @@ RUN wget -O /tmp/adams-deeplearning-spectral-app-snapshot.deb https://adams.cms.
     && dpkg -i /tmp/adams-deeplearning-spectral-app-snapshot.deb \
     && rm /tmp/adams-deeplearning-spectral-app-snapshot.deb
 
+COPY bash.bashrc /etc/bash.bashrc
 COPY Placeholders.props /root/.adams/Placeholders.props

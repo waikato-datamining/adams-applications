@@ -19,4 +19,5 @@ RUN wget -O /tmp/adams-spectral-app-snapshot.deb https://adams.cms.waikato.ac.nz
     && dpkg -i /tmp/adams-spectral-app-snapshot.deb \
     && rm /tmp/adams-spectral-app-snapshot.deb
 
+COPY bash.bashrc /etc/bash.bashrc
 COPY Placeholders.props /root/.adams/Placeholders.props

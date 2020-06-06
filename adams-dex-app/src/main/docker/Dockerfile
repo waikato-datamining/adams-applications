@@ -19,4 +19,5 @@ RUN wget -O /tmp/adams-dex-app-snapshot.deb https://adams.cms.waikato.ac.nz/snap
     && dpkg -i /tmp/adams-dex-app-snapshot.deb \
     && rm /tmp/adams-dex-app-snapshot.deb
 
+COPY bash.bashrc /etc/bash.bashrc
 COPY Placeholders.props /root/.adams/Placeholders.props
