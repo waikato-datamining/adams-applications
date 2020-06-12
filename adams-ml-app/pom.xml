@@ -359,12 +359,6 @@
         <artifactId>maven-jar-plugin</artifactId>
       </plugin>
 
-      <!-- generates list of dependent modules -->
-      <plugin>
-        <groupId>com.github.fracpete</groupId>
-        <artifactId>maven-dependency-list-plugin</artifactId>
-      </plugin>
-
       <!-- generates dependency graphs, get pdfs/flows/sources -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
