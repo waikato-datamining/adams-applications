@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2022-03-29 09:54:47
+# Date: 2022-04-01 16:30:41
 # User: fracpete
 # Charset: UTF-8
 # Modules: adams-annotator,adams-core,adams-event,adams-excel,adams-ffmpeg,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-json,adams-math,adams-meta,adams-ml,adams-odf,adams-pdf,adams-python,adams-random,adams-rats-core,adams-spreadsheet,adams-terminal,adams-video,adams-visualstats,adams-weka,adams-xml
@@ -7,10 +7,33 @@
 adams.flow.control.Flow -annotation "Iterates the input directory and creates a file lists with ADAMS annotation files per sub-directory." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.standalone.CallableActors
   adams.flow.sink.Display -name Info -short-title true -display-type adams.flow.core.displaytype.Default -writer adams.data.io.output.NullWriter
+  adams.flow.control.SubProcess -name "perform split"
+   adams.flow.control.Tee -name "# files"
+    adams.flow.transformer.ArrayLength
+    adams.flow.transformer.SetVariable -var-name num_files
+   adams.flow.transformer.SetVariable -name reset -var-name skip -var-value false
+   adams.flow.control.ConditionalTrigger -name "enough files?" -condition "adams.flow.condition.bool.Expression -expression \"@{num_files} < @{min_files}\""
+    adams.flow.standalone.SetVariable -name reset -var-name skip -var-value true
+    adams.flow.source.CombineVariables -expression "--> not enough files: @{num_files} < @{min_files}" -conversion adams.data.conversion.StringToString
+    adams.flow.control.Tee -name info
+     adams.flow.transformer.BaseName
+     adams.flow.transformer.SetVariable -var-name title
+     adams.flow.sink.CallableSink -callable Info
+   adams.flow.control.Block -condition "adams.flow.condition.bool.Expression -expression \"@{skip} = true\""
+   adams.flow.transformer.PrepareFileBasedDataset -preparation "adams.flow.transformer.preparefilebaseddataset.TrainValidateTestSplit -train-percentage @{train_perc} -validate-percentage @{val_perc}"
+   adams.flow.control.ContainerValuePicker -name train -value Train
+    adams.flow.transformer.StringJoin -glue \n
+    adams.flow.sink.DumpFile -output @{train_file}
+   adams.flow.control.ContainerValuePicker -name test -value Test
+    adams.flow.transformer.StringJoin -glue \n
+    adams.flow.sink.DumpFile -output @{test_file}
+   adams.flow.control.ContainerValuePicker -name val -value Validation
+    adams.flow.transformer.StringJoin -glue \n
+    adams.flow.sink.DumpFile -output @{val_file}
  adams.flow.source.Start
  adams.flow.control.Trigger -name "prompt user"
   adams.flow.standalone.SetVariable -name "restore file" -var-name restore -var-value @{flow_filename_long}.props -value-type FILE_FORWARD_SLASHES -expand-value true
-  adams.flow.source.EnterManyValues -stop-if-canceled true -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name dir -display \"Directory with annotation batches\" -file-chooser-title \"Select directory\" -use-forward-slashes true" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name train_perc -display \"Training percentage (0-1)\" -help \"the percentage to use for training, remainder is for validation or validation/test\" -type DOUBLE -default-value 0.8" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name test_perc -display \"Test percentage (0-1)\" -help \"Validation percentage: 1 - train% - test%\" -type DOUBLE -default-value 0.1" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_files -display \"Minimum # files in batch\" -help \"The minimum number of .report files in a batch directory for the splits to succeed\" -type INTEGER -default-value 20" -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name output_dir -display \"Output dir\" -help \"The directory to save the file lists in\" -file-chooser-title \"Output dir\" -use-forward-slashes true" -output-type MAP -restoration-enabled true -restoration-file @{restore}
+  adams.flow.source.EnterManyValues -stop-if-canceled true -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name dir -display \"Directory with annotation batches\" -file-chooser-title \"Select directory\" -use-forward-slashes true" -value "adams.flow.source.valuedefinition.ListSelectionValueDefinition -name annotations_type -display \"Type of annotations\" -help \"What domain the annotations are for\" -value object_detection -value instance_segmentation -value image_segmentation -default-value object_detection" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name train_perc -display \"Training percentage (0-1)\" -help \"the percentage to use for training, remainder is for validation or validation/test\" -type DOUBLE -default-value 0.8" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name test_perc -display \"Test percentage (0-1)\" -help \"Validation percentage: 1 - train% - test%\" -type DOUBLE -default-value 0.1" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name min_files -display \"Minimum # files in batch\" -help \"The minimum number of .report files in a batch directory for the splits to succeed\" -type INTEGER -default-value 20" -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name output_dir -display \"Output dir\" -help \"The directory to save the file lists in\" -file-chooser-title \"Output dir\" -use-forward-slashes true" -output-type MAP -restoration-enabled true -restoration-file @{restore}
   adams.flow.transformer.MapToVariables
   adams.flow.control.Trigger -name val_perc
    adams.flow.source.MathExpression -expression "1.0 - @{train_perc} - @{test_perc}"
@@ -38,27 +61,11 @@ adams.flow.control.Flow -annotation "Iterates the input directory and creates a 
    adams.flow.control.Tee -name val
     adams.flow.transformer.StringInsert -after true -value -val.list
     adams.flow.transformer.SetVariable -name val_file -var-name val_file -value-type FILE_FORWARD_SLASHES
-  adams.flow.control.Trigger -name split
-   adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory @{annotations_dir} -regexp .*\\\\.report -sorting SORT_BY_NAME -recursive true" -use-forward-slashes true
-   adams.flow.control.Tee -name "# files"
-    adams.flow.transformer.ArrayLength
-    adams.flow.transformer.SetVariable -var-name num_files
-   adams.flow.transformer.SetVariable -name reset -var-name skip -var-value false
-   adams.flow.control.ConditionalTrigger -name "enough files?" -condition "adams.flow.condition.bool.Expression -expression \"@{num_files} < @{min_files}\""
-    adams.flow.standalone.SetVariable -name reset -var-name skip -var-value true
-    adams.flow.source.CombineVariables -expression "--> not enough files: @{num_files} < @{min_files}" -conversion adams.data.conversion.StringToString
-    adams.flow.control.Tee -name info
-     adams.flow.transformer.BaseName
-     adams.flow.transformer.SetVariable -var-name title
-     adams.flow.sink.CallableSink -callable Info
-   adams.flow.control.Block -condition "adams.flow.condition.bool.Expression -expression \"@{skip} = true\""
-   adams.flow.transformer.PrepareFileBasedDataset -preparation "adams.flow.transformer.preparefilebaseddataset.TrainValidateTestSplit -train-percentage @{train_perc} -validate-percentage @{val_perc}"
-   adams.flow.control.ContainerValuePicker -name train -value Train
-    adams.flow.transformer.StringJoin -glue \n
-    adams.flow.sink.DumpFile -output @{train_file}
-   adams.flow.control.ContainerValuePicker -name test -value Test
-    adams.flow.transformer.StringJoin -glue \n
-    adams.flow.sink.DumpFile -output @{test_file}
-   adams.flow.control.ContainerValuePicker -name val -value Validation
-    adams.flow.transformer.StringJoin -glue \n
-    adams.flow.sink.DumpFile -output @{val_file}
+  adams.flow.control.Switch -condition "adams.flow.condition.bool.Expression -expression \"(\\\\\\\"@{annotations_type}\\\\\\\" = \\\\\\\"object_detection\\\\\\\") or (\\\\\\\"@{annotations_type}\\\\\\\" = \\\\\\\"instance_segmentation\\\\\\\")\"" -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{annotations_type}\\\\\\\" = \\\\\\\"image_segmentation\\\\\\\"\"" -condition adams.flow.condition.bool.True
+   adams.flow.control.Trigger -name object_detection/instance_segmentation
+    adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory @{annotations_dir} -regexp .*\\\\.report -sorting SORT_BY_NAME -recursive true" -use-forward-slashes true
+    adams.flow.transformer.CallableTransformer -callable "perform split"
+   adams.flow.control.Trigger -name image_segmentation
+    adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory @{annotations_dir} -regexp .*\\\\.jpg -sorting SORT_BY_NAME -recursive true" -use-forward-slashes true
+    adams.flow.transformer.CallableTransformer -callable "perform split"
+   adams.flow.control.Stop -stop-msg "Unhandled type of annotations: @{annotations_type}"
