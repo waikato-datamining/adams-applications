@@ -26,7 +26,6 @@
     <module>adams-annotator</module>
     <module>adams-base-all</module>
     <module>adams-basic-app</module>
-    <module>adams-dex-app</module>
     <module>adams-ml-app</module>
     <module>adams-spectral-app</module>
   </modules>
