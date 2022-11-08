@@ -67,21 +67,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- scripts -->
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-scripts</artifactId>
-      <version>${adams.version}</version>
-      <classifier>scripts</classifier>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-scripts-debian</artifactId>
-      <version>${adams.version}</version>
-      <classifier>scripts</classifier>
-    </dependency>
-
+    <!-- base -->
     <!-- access -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
@@ -92,6 +78,21 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-access</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
+    <!-- compress -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-compress</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-compress</artifactId>
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
@@ -122,21 +123,6 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-db</artifactId>
-      <version>${adams.version}</version>
-      <scope>test</scope>
-      <type>test-jar</type>
-    </dependency>
-
-    <!-- compress -->
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-compress</artifactId>
-      <version>${adams.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-compress</artifactId>
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
@@ -208,6 +194,7 @@
       <version>${adams.version}</version>
     </dependency>
 
+    <!-- imaging-boofcv -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-imaging-boofcv</artifactId>
@@ -331,6 +318,21 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-odf</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
+    <!-- opencv -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-opencv</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-opencv</artifactId>
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
@@ -501,6 +503,7 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- addons -->
     <!-- audio -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
@@ -511,6 +514,21 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-audio</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
+    <!-- bootstrapp -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-bootstrapp</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-bootstrapp</artifactId>
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>

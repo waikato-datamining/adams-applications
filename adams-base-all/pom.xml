@@ -82,6 +82,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- compress -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-compress</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-compress</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- core -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
@@ -107,21 +122,6 @@
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-db</artifactId>
-      <version>${adams.version}</version>
-      <scope>test</scope>
-      <type>test-jar</type>
-    </dependency>
-
-    <!-- compress -->
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-compress</artifactId>
-      <version>${adams.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>nz.ac.waikato.cms.adams</groupId>
-      <artifactId>adams-compress</artifactId>
       <version>${adams.version}</version>
       <scope>test</scope>
       <type>test-jar</type>
@@ -187,6 +187,7 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- imaging-boofcv -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>adams-imaging-boofcv</artifactId>
