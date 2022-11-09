@@ -107,7 +107,7 @@
         <exclude>*:macosx-arm64</exclude>
         <exclude>*:windows-x86</exclude>
         <exclude>*:windows-x86_64</exclude>
-        <exclude>*:windows64</exclude>
+        <exclude>com.github.fracpete:rsync4j-windows64</exclude>
         <exclude>*:natives</exclude>
         <exclude>*:linux-armhf</exclude>
       </excludes>

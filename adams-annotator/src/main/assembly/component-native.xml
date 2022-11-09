@@ -21,7 +21,7 @@
       <outputDirectory>/lib/windows64</outputDirectory>
       <includes>
         <include>*:windows-x86_64</include>
-        <include>*:windows64</include>
+        <include>com.github.fracpete:rsync4j-windows64</include>
         <include>*:netlib-native_ref-win-x86_64:*</include>
       </includes>
     </dependencySet>
