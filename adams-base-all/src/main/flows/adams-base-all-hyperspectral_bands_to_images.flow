@@ -22,7 +22,7 @@ adams.flow.control.Flow -annotation "Displays all bands and ground truth of a hy
    adams.flow.source.StorageForLoop -upper @{num_bands} -variable band -storage image
    adams.flow.transformer.SetVariable -var-name index -var-value ;;@{band} -expand-value true
    adams.flow.transformer.Mat5ArraySubset -index @{index}
-   adams.flow.transformer.Convert -conversion adams.data.conversion.MatlabArrayToDoubleMatrix
+   adams.flow.transformer.Convert -conversion adams.data.conversion.Mat5ArrayToDoubleMatrix
    adams.flow.transformer.Convert -name "Convert (2)" -conversion "adams.data.conversion.DoubleMatrixToBufferedImage -generator adams.gui.visualization.core.BiColorGenerator"
    adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name entry -var-value "band: @{band}" -expand-value true
    adams.flow.sink.CallableSink -callable Bands
@@ -30,6 +30,6 @@ adams.flow.control.Flow -annotation "Displays all bands and ground truth of a hy
   adams.flow.source.FileSupplier -file ${EXAMPLE_FLOWS}/data/Indian_pines_gt.mat -use-forward-slashes true
   adams.flow.transformer.Mat5FileReader
   adams.flow.transformer.Mat5FileGetArray -entry-name indian_pines_gt
-  adams.flow.transformer.Convert -conversion adams.data.conversion.MatlabArrayToDoubleMatrix
+  adams.flow.transformer.Convert -conversion adams.data.conversion.Mat5ArrayToDoubleMatrix
   adams.flow.transformer.Convert -name "Convert (2)" -conversion "adams.data.conversion.DoubleMatrixToBufferedImage -generator \"adams.gui.visualization.core.ColorProviderBasedColorGradientGenerator -color-provider adams.gui.visualization.core.DefaultColorProvider\""
   adams.flow.sink.CallableSink -callable "Ground truth"
