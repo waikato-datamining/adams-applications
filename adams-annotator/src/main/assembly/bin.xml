@@ -112,6 +112,11 @@
       <outputDirectory>flows</outputDirectory>
       <filtered>false</filtered>
     </file>
+    <file>
+      <source>${project.build.directory}/flows-dependencies/flows/adams-imaging-ext_run-dextr.flow</source>
+      <outputDirectory>flows</outputDirectory>
+      <filtered>false</filtered>
+    </file>
   </files>
 
   <dependencySets>
