@@ -1,0 +1,59 @@
+# Project: adams
+# Date: 2023-03-28 14:13:46
+# User: fracpete
+# Charset: UTF-8
+# Modules: adams-annotator,adams-audio,adams-core,adams-docker,adams-event,adams-excel,adams-ffmpeg,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-ext,adams-json,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-opencv,adams-pdf,adams-pyro4,adams-python,adams-random,adams-rats-core,adams-redis,adams-spreadsheet,adams-terminal,adams-video,adams-visualstats,adams-weka,adams-xml,adams-yaml
+#
+adams.flow.control.Flow -annotation "Plots metrics from a MMSegmentation JSON log file." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
+ adams.flow.standalone.CallableActors
+  adams.flow.sink.SequencePlotter -name Statistics -short-title true -display-type adams.flow.core.displaytype.Default -width @{plot_width} -height @{plot_height} -writer adams.gui.print.NullWriter -comparison X_AND_Y -paintlet "adams.gui.visualization.sequence.LinePaintlet -markers-disabled true -paint-all true" -overlay-paintlet "adams.gui.visualization.sequence.LOWESSOverlayPaintlet -window @{lowess_window}" -marker-paintlet adams.flow.sink.sequenceplotter.NoMarkers -error-paintlet adams.flow.sink.sequenceplotter.NoErrorPaintlet -mouse-click-action adams.flow.sink.sequenceplotter.NullClickAction -color-provider @{color_provider} -overlay-color-provider adams.gui.visualization.core.DefaultColorProvider -title Statistics -axis-x "adams.gui.visualization.core.AxisPanelOptions -label evaluations -tick-generator \"adams.gui.visualization.core.axis.FancyTickGenerator -num-ticks 20\" -width 40 -custom-format 0" -axis-y "adams.gui.visualization.core.AxisPanelOptions -label value -tick-generator adams.gui.visualization.core.axis.FancyTickGenerator -nth-value 3 -width 60 -custom-format 0.000" -side-panel-width @{side_panel_width} -plot-updater "adams.flow.sink.sequenceplotter.SimplePlotUpdater -update-interval @{update_interval}" -post-processor adams.flow.sink.sequenceplotter.PassThrough
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name "prompt user"
+  adams.flow.standalone.SetVariable -name "restore file" -var-name restore -var-value @{flow_filename_long}.props -value-type FILE_FORWARD_SLASHES -expand-value true
+  adams.flow.source.EnterManyValues -name Parameters -stop-if-canceled true -value "adams.flow.source.valuedefinition.FileValueDefinition -name input_file -display \"Input file\" -help \"The metrics.json file to use for plotting\" -file-chooser-title \"Input file\" -extension json -use-forward-slashes true" -value "adams.flow.source.valuedefinition.GOEValueDefinition -name color_provider -display \"Color provider\" -help \"How to colorize the plots\" -super-class adams.gui.visualization.core.ColorProvider -default-class adams.gui.visualization.core.DefaultColorProvider" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name side_panel_width -display \"Side panel width\" -help \"The width of the side panel in the plot\" -type INTEGER -default-value 250" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name plot_width -display \"Plot width\" -help \"The width of the plot window\" -type INTEGER -default-value 800" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name plot_height -display \"Plot height\" -help \"The height of the plot window\" -type INTEGER -default-value 350" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name lowess_window -display \"Lowess window size\" -help \"the size of the window used by the LOWESS overlay\" -type INTEGER -default-value 100" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name update_interval -display \"Update interval\" -help \"After how many data points to update the graph, use -1 to only update once\" -type INTEGER -default-value 1000" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name save_plot -display \"Save plot?\" -type BOOLEAN -default-value false" -value "adams.flow.source.valuedefinition.FileValueDefinition -name plot_output -display \"Plot output\" -help \"The file to save the plot under as PNG\" -file-chooser-title \"Plot output\" -extension png -use-forward-slashes true" -output-type MAP -restoration-enabled true -restoration-file @{restore}
+  adams.flow.transformer.MapToVariables
+  adams.flow.control.Trigger -name "determines modes"
+   adams.flow.standalone.HashSetInit -storage-name modes -conversion adams.data.conversion.StringToString
+   adams.flow.source.FileSupplier -file @{input_file}
+   adams.flow.transformer.TextFileReader -reader adams.data.io.input.LineArrayTextReader
+   adams.flow.transformer.ArraySubsetGeneration -generator "adams.flow.transformer.arraysubsetgeneration.RangeSubset -elements 2-last"
+   adams.flow.control.ArrayProcess
+    adams.flow.transformer.SimpleStringReplace -find "\""
+    adams.flow.transformer.StringReplace -find ".*mode: ([a-z]+),.*" -replace $1
+   adams.flow.transformer.HashSetAdd -storage-name modes -conversion adams.data.conversion.ObjectToObject
+  adams.flow.control.Trigger -name "select mode"
+   adams.flow.source.HashSet -storage-name modes -conversion adams.data.conversion.AnyToString
+   adams.flow.transformer.SpreadSheetSelectSubset -name "Select mode" -short-title true -multi-selection false -preview adams.gui.core.spreadsheetpreview.NullPreview
+   adams.flow.transformer.SpreadSheetGetCell
+   adams.flow.transformer.SetVariable -var-name mode
+   adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name mode_regexp -var-value ".*\\\"mode\\\": \\\"@{mode}\\\".*" -expand-value true
+  adams.flow.control.Trigger -name "determine metrics"
+   adams.flow.standalone.HashSetInit -storage-name metrics -conversion adams.data.conversion.StringToString
+   adams.flow.source.FileSupplier -file @{input_file}
+   adams.flow.transformer.TextFileReader -reader adams.data.io.input.LineArrayTextReader
+   adams.flow.transformer.StringMatcher -regexp @{mode_regexp}
+   adams.flow.transformer.ArrayToSequence
+   adams.flow.transformer.Convert -conversion "adams.data.conversion.StringToJson -type OBJECT"
+   adams.flow.transformer.Convert -name "Convert (2)" -conversion adams.data.conversion.JsonObjectToMap
+   adams.flow.transformer.GetMapKeys -output-array true
+   adams.flow.transformer.HashSetAdd -storage-name metrics -conversion adams.data.conversion.ObjectToObject
+  adams.flow.control.Trigger -name "select metric"
+   adams.flow.source.HashSet -storage-name metrics -conversion adams.data.conversion.AnyToString
+   adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.Invert -row-finder \"adams.data.spreadsheet.rowfinder.ByValue -reg-exp (mode|epoch|iter)\""
+   adams.flow.transformer.SpreadSheetSelectSubset -name "Select metric" -short-title true -preview adams.gui.core.spreadsheetpreview.NullPreview
+   adams.flow.transformer.SpreadSheetInfo -output-array true -type COLUMN_VALUES
+   adams.flow.transformer.SetStorageValue -storage-name metrics_to_plot
+  adams.flow.control.Trigger -name "plot metrics"
+   adams.flow.source.StorageValue -storage-name metrics_to_plot -conversion adams.data.conversion.UnknownToUnknown
+   adams.flow.transformer.ArrayToSequence
+   adams.flow.transformer.SetVariable -var-name metric
+   adams.flow.control.Trigger -name "plot metric"
+    adams.flow.source.FileSupplier -file @{input_file}
+    adams.flow.transformer.TextFileReader -reader adams.data.io.input.LineArrayTextReader
+    adams.flow.transformer.StringMatcher -regexp @{mode_regexp}
+    adams.flow.transformer.ArrayToSequence
+    adams.flow.transformer.Convert -conversion "adams.data.conversion.StringToJson -type OBJECT"
+    adams.flow.transformer.Convert -name "Convert (2)" -conversion adams.data.conversion.JsonObjectToMap
+    adams.flow.transformer.GetMapValue -key @{metric}
+    adams.flow.transformer.MakePlotContainer -plot-name @{metric}
+    adams.flow.sink.CallableSink -callable Statistics
