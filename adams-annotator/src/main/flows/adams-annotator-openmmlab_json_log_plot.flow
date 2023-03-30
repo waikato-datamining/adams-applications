@@ -1,10 +1,10 @@
 # Project: adams
-# Date: 2023-03-28 14:13:46
+# Date: 2023-03-30 15:33:33
 # User: fracpete
 # Charset: UTF-8
 # Modules: adams-annotator,adams-audio,adams-core,adams-docker,adams-event,adams-excel,adams-ffmpeg,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-ext,adams-json,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-opencv,adams-pdf,adams-pyro4,adams-python,adams-random,adams-rats-core,adams-redis,adams-spreadsheet,adams-terminal,adams-video,adams-visualstats,adams-weka,adams-xml,adams-yaml
 #
-adams.flow.control.Flow -annotation "Plots metrics from a MMSegmentation JSON log file." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
+adams.flow.control.Flow -annotation "Plots metrics found in an OpenMMLab framework JSON log file (eg MMSegmentation or MMDetection)." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.standalone.CallableActors
   adams.flow.sink.SequencePlotter -name Statistics -short-title true -display-type adams.flow.core.displaytype.Default -width @{plot_width} -height @{plot_height} -writer adams.gui.print.NullWriter -comparison X_AND_Y -paintlet "adams.gui.visualization.sequence.LinePaintlet -markers-disabled true -paint-all true" -overlay-paintlet "adams.gui.visualization.sequence.LOWESSOverlayPaintlet -window @{lowess_window}" -marker-paintlet adams.flow.sink.sequenceplotter.NoMarkers -error-paintlet adams.flow.sink.sequenceplotter.NoErrorPaintlet -mouse-click-action adams.flow.sink.sequenceplotter.NullClickAction -color-provider @{color_provider} -overlay-color-provider adams.gui.visualization.core.DefaultColorProvider -title Statistics -axis-x "adams.gui.visualization.core.AxisPanelOptions -label evaluations -tick-generator \"adams.gui.visualization.core.axis.FancyTickGenerator -num-ticks 20\" -width 40 -custom-format 0" -axis-y "adams.gui.visualization.core.AxisPanelOptions -label value -tick-generator adams.gui.visualization.core.axis.FancyTickGenerator -nth-value 3 -width 60 -custom-format 0.000" -side-panel-width @{side_panel_width} -plot-updater "adams.flow.sink.sequenceplotter.SimplePlotUpdater -update-interval @{update_interval}" -post-processor adams.flow.sink.sequenceplotter.PassThrough
  adams.flow.source.Start
