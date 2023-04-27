@@ -84,6 +84,14 @@
         <exclude>**/META-INF/**</exclude>
       </excludes>
     </fileSet>
+
+    <fileSet>
+      <directory>${project.build.directory}/flows-dependencies/flows/</directory>
+      <outputDirectory>flows</outputDirectory>
+      <includes>
+        <include>adams-imaging-ext_run*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
   <files>
@@ -109,11 +117,6 @@
     </file>
     <file>
       <source>${project.build.directory}/flows-dependencies/flows/adams-imaging-num_points_poly.flow</source>
-      <outputDirectory>flows</outputDirectory>
-      <filtered>false</filtered>
-    </file>
-    <file>
-      <source>${project.build.directory}/flows-dependencies/flows/adams-imaging-ext_run-dextr.flow</source>
       <outputDirectory>flows</outputDirectory>
       <filtered>false</filtered>
     </file>
