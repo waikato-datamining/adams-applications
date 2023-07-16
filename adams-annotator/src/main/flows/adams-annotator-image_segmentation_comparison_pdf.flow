@@ -1,0 +1,196 @@
+# Project: adams
+# Date: 2023-07-17 11:57:28
+# User: fracpete
+# Charset: UTF-8
+# Modules: adams-annotator,adams-audio,adams-core,adams-docker,adams-event,adams-excel,adams-ffmpeg,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-ext,adams-json,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-opencv,adams-pdf,adams-pyro4,adams-python,adams-random,adams-rats-core,adams-redis,adams-spreadsheet,adams-terminal,adams-video,adams-visualstats,adams-weka,adams-xml,adams-yaml
+#
+adams.flow.control.Flow -annotation "Generates a PDF comparing annotations and predictions\\nof image segmentation datasets/models." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
+ adams.flow.standalone.CallableActors
+  adams.flow.sink.ProgressBar -display-type adams.flow.core.displaytype.Default -writer adams.gui.print.NullWriter -max @{max}
+  adams.flow.sink.SequencePlotter -name "SequencePlotter (y: 0-1)" -display-type adams.flow.core.displaytype.Default -writer adams.gui.print.NullWriter -paintlet "adams.gui.visualization.sequence.PaintletWithFixedYRange -max-y 100.0 -paintlet \"adams.gui.visualization.sequence.LinePaintlet -paint-all true\"" -overlay-paintlet adams.gui.visualization.sequence.NullPaintlet -marker-paintlet adams.flow.sink.sequenceplotter.NoMarkers -error-paintlet adams.flow.sink.sequenceplotter.NoErrorPaintlet -mouse-click-action adams.flow.sink.sequenceplotter.NullClickAction -color-provider "adams.gui.visualization.core.CustomColorProvider -color #0000ff -color #ff0000 -color #00ffff -color #00ff00 -color #ff00ff -color #ffc800 -color #ffafaf" -overlay-color-provider adams.gui.visualization.core.DefaultColorProvider -title "" -axis-x "adams.gui.visualization.core.AxisPanelOptions -label index -tick-generator adams.gui.visualization.core.axis.FancyTickGenerator -nth-value 2 -width 40 -custom-format 0" -axis-y "adams.gui.visualization.core.AxisPanelOptions -label value -tick-generator adams.gui.visualization.core.axis.FancyTickGenerator -nth-value 2 -width 60 -custom-format 0.0" -plot-updater adams.flow.sink.sequenceplotter.SimplePlotUpdater -post-processor adams.flow.sink.sequenceplotter.PassThrough
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name "prompt user"
+  adams.flow.standalone.SetVariable -name "restore file" -var-name restore -var-value @{flow_filename_long}.props -value-type FILE_FORWARD_SLASHES -expand-value true
+  adams.flow.source.EnterManyValues -name Parameters -stop-if-canceled true -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name annotation_dir -display \"Directory with annotations\" -file-chooser-title Annotations -use-forward-slashes true" -value "adams.flow.source.valuedefinition.ListSelectionValueDefinition -name annotation_reader -display \"Reader for annotations\" -help \"the format the annotations are in\" -value bluechannel -value indexed_png -value grayscale -default-value bluechannel" -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name prediction_dir -display \"Directory with predictions\" -file-chooser-title Predictions -use-forward-slashes true" -value "adams.flow.source.valuedefinition.ListSelectionValueDefinition -name prediction_reader -display \"Reader for predictions\" -help \"the format the predictions are in\" -value bluechannel -value indexed_png -value grayscale -default-value bluechannel" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name layers -display Layers -help \"blank-separated list\" -default-value \"layer1 layer2\"" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name skip_first -display \"Skip first layer?\" -help \"first layer is usually the background\" -type BOOLEAN -default-value true" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name prompt_for_title -display \"Prompt for report title?\" -help \"whether to prompt the user for a report title or automatically use the parent dir\" -type BOOLEAN -default-value true" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name include_ann_and_pred -display \"Include annotation/prediction images?\" -help \"whether to include separates overlay images for annotation and prediction\" -type BOOLEAN -default-value true" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name include_comparison -display \"Include comparison image?\" -help \"whether to include an image highlighting the overlapping, missing, additional pixels\" -type BOOLEAN -default-value false" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name color_overlap -display \"Color (overlap)\" -help \"\\\"overlap\\\" color to use in comparison image (between annotation and prediction)\" -type COLOR -default-value #00ff00" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name color_missed -display \"Color (missed)\" -help \"\\\"missed\\\" color to use in comparison image (annotations not predicted)\" -type COLOR -default-value #ff0000" -value "adams.flow.source.valuedefinition.DefaultValueDefinition -name color_additional -display \"Color (additional)\" -help \"\\\"additional\\\" color to use in comparison image (additional pixels that have no annotation counterpart)\" -type COLOR -default-value #ffff00" -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name output_dir -display \"Output dir\" -help \"where to store the CSV/PDF - uses the title as file name\" -file-chooser-title \"Output dir\" -use-forward-slashes true" -output-type MAP -restoration-enabled true -restoration-file @{restore}
+  adams.flow.transformer.MapToVariables
+ adams.flow.control.Trigger -name "determine title"
+  adams.flow.source.Variable -var-name prediction_dir -conversion adams.data.conversion.StringToString
+  adams.flow.transformer.DirName
+  adams.flow.transformer.BaseName
+  adams.flow.transformer.SetVariable -var-name title
+  adams.flow.transformer.SetStorageValue -annotation "dummy for appending PDF document" -storage-name title
+ adams.flow.control.ConditionalTrigger -name "prompt for title" -condition "adams.flow.condition.bool.Expression -expression \"@{prompt_for_title} = true\""
+  adams.flow.source.EnterValue -name Title -stop-if-canceled true -message "Please enter the title for the report" -initial-value @{title}
+  adams.flow.transformer.SetVariable -var-name title
+ adams.flow.control.Trigger -name "output files"
+  adams.flow.source.Variable -var-name title -conversion adams.data.conversion.StringToString
+  adams.flow.transformer.Convert -conversion "adams.data.conversion.StringToValidFileName -replace _"
+  adams.flow.control.Tee -name csv
+   adams.flow.transformer.StringInsert -after true -value .csv
+   adams.flow.transformer.PrependDir -prefix @{output_dir}
+   adams.flow.transformer.SetVariable -var-name output_csv
+  adams.flow.control.Tee -name pdf
+   adams.flow.transformer.StringInsert -after true -value .pdf
+   adams.flow.transformer.PrependDir -prefix @{output_dir}
+   adams.flow.transformer.SetVariable -var-name output_pdf
+ adams.flow.control.Trigger -name "new pdf"
+  adams.flow.standalone.DeleteStorageValue -storage-name sheet
+  adams.flow.source.PDFNewDocument -output-file @{output_pdf}
+  adams.flow.transformer.PDFAppendDocument -proclet "adams.flow.transformer.pdfproclet.Headline -headline @{title} -font-headline Helvetica-Bold-24" -type STORAGE -storage-name title
+  adams.flow.control.Trigger -name "color key"
+   adams.flow.source.NewImage -width 400 -height 300 -conversion adams.data.conversion.BufferedImageToBufferedImage
+   adams.flow.control.SubProcess -name overlap
+    adams.flow.transformer.Draw -operation "adams.flow.transformer.draw.Text -y 16 -text Overlap" -no-copy true
+    adams.flow.transformer.Draw -name "Draw (2)" -operation "adams.flow.transformer.draw.Rectangle -color @{color_overlap} -x 100 -width 50 -height 20 -fill true" -no-copy true
+   adams.flow.control.SubProcess -name missed
+    adams.flow.transformer.Draw -operation "adams.flow.transformer.draw.Text -y 46 -text Missed" -no-copy true
+    adams.flow.transformer.Draw -name "Draw (2)" -operation "adams.flow.transformer.draw.Rectangle -color @{color_missed} -x 100 -y 31 -width 50 -height 20 -fill true" -no-copy true
+   adams.flow.control.SubProcess -name additional
+    adams.flow.transformer.Draw -operation "adams.flow.transformer.draw.Text -y 76 -text Additional" -no-copy true
+    adams.flow.transformer.Draw -name "Draw (2)" -operation "adams.flow.transformer.draw.Rectangle -color @{color_additional} -x 100 -y 61 -width 50 -height 20 -fill true" -no-copy true
+   adams.flow.transformer.SetStorageValue -storage-name color_key
+  adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (color key)" -proclet adams.flow.transformer.pdfproclet.Image -type STORAGE -storage-name color_key
+  adams.flow.transformer.SetStorageValue -storage-name pdf
+ adams.flow.control.Trigger -name iterate
+  adams.flow.standalone.SetVariable -name reset -var-name count -var-value 0
+  adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory @{annotation_dir} -regexp .*\\\\.jpg -sorting SORT_BY_NAME" -use-forward-slashes true
+  adams.flow.control.Tee -name "# files"
+   adams.flow.transformer.ArrayLength
+   adams.flow.transformer.SetVariable -var-name max
+  adams.flow.transformer.ArrayToSequence
+  adams.flow.control.Tee -name progress
+   adams.flow.transformer.IncVariable -var-name count -output-variable-value true
+   adams.flow.sink.CallableSink -callable ProgressBar
+  adams.flow.control.Tee -name filename
+   adams.flow.transformer.BaseName
+   adams.flow.transformer.SetVariable -var-name file
+   adams.flow.transformer.Convert -conversion adams.data.conversion.ReplaceFileExtension
+   adams.flow.transformer.SetVariable -name "SetVariable (2)" -var-name entry
+  adams.flow.control.Trigger -name annotation
+   adams.flow.source.CombineVariables -expression @{annotation_dir}/@{file} -conversion adams.data.conversion.StringToString
+   adams.flow.control.Switch -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{annotation_reader}\\\\\\\" = \\\\\\\"bluechannel\\\\\\\"\"" -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{annotation_reader}\\\\\\\" = \\\\\\\"indexed_png\\\\\\\"\"" -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{annotation_reader}\\\\\\\" = \\\\\\\"grayscale\\\\\\\"\"" -condition adams.flow.condition.bool.True -lenient true
+    adams.flow.transformer.ImageSegmentationFileReader -name bluechannel -reader "adams.data.io.input.BlueChannelImageSegmentationReader -skip-first-layer @{skip_first} -layer-name @{layers} -reader \"adams.data.io.input.PNGImageReader -color-provider adams.gui.visualization.core.DefaultColorProvider\""
+    adams.flow.transformer.ImageSegmentationFileReader -name indexed_png -reader "adams.data.io.input.IndexedPNGImageSegmentationReader -skip-first-layer @{skip_first} -layer-name @{layers}"
+    adams.flow.transformer.ImageSegmentationFileReader -name grayscale -reader "adams.data.io.input.GrayscaleImageSegmentationReader -skip-first-layer @{skip_first} -layer-name @{layers} -reader \"adams.data.io.input.PNGImageReader -color-provider adams.gui.visualization.core.DefaultColorProvider\""
+    adams.flow.control.Stop -stop-msg "Unhandled annotation reader: @{annotation_reader}"
+   adams.flow.control.Tee -name "create overlay"
+    adams.flow.transformer.SequenceToArray
+    adams.flow.transformer.ImageSegmentationContainerOperation -operation "adams.data.imagesegmentation.operation.SimpleOverlay -color-provider \"adams.gui.visualization.core.CustomColorProvider -color #ff0000 -color #0000ff -color #00ffff -color #00ff00 -color #ff00ff -color #ffc800 -color #ffafaf\""
+    adams.flow.transformer.SetStorageValue -storage-name annotation_image
+   adams.flow.transformer.SetStorageValue -storage-name annotation
+  adams.flow.control.Trigger -name prediction
+   adams.flow.source.CombineVariables -expression @{prediction_dir}/@{file} -conversion adams.data.conversion.StringToString
+   adams.flow.control.Switch -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{prediction_reader}\\\\\\\" = \\\\\\\"bluechannel\\\\\\\"\"" -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{prediction_reader}\\\\\\\" = \\\\\\\"indexed_png\\\\\\\"\"" -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{prediction_reader}\\\\\\\" = \\\\\\\"grayscale\\\\\\\"\"" -condition adams.flow.condition.bool.True -lenient true
+    adams.flow.transformer.ImageSegmentationFileReader -name bluechannel -reader "adams.data.io.input.BlueChannelImageSegmentationReader -skip-first-layer @{skip_first} -layer-name @{layers} -reader \"adams.data.io.input.PNGImageReader -color-provider adams.gui.visualization.core.DefaultColorProvider\""
+    adams.flow.transformer.ImageSegmentationFileReader -name indexed_png -reader "adams.data.io.input.IndexedPNGImageSegmentationReader -skip-first-layer @{skip_first} -layer-name @{layers}"
+    adams.flow.transformer.ImageSegmentationFileReader -name grayscale -reader "adams.data.io.input.GrayscaleImageSegmentationReader -skip-first-layer @{skip_first} -layer-name @{layers} -reader \"adams.data.io.input.PNGImageReader -color-provider adams.gui.visualization.core.DefaultColorProvider\""
+    adams.flow.control.Stop -stop-msg "Unhandled prediction reader: @{prediction_reader}"
+   adams.flow.control.Tee -name "create overlay"
+    adams.flow.transformer.SequenceToArray
+    adams.flow.transformer.ImageSegmentationContainerOperation -operation "adams.data.imagesegmentation.operation.SimpleOverlay -color-provider \"adams.gui.visualization.core.CustomColorProvider -color #ff0000 -color #0000ff -color #00ffff -color #00ff00 -color #ff00ff -color #ffc800 -color #ffafaf\""
+    adams.flow.transformer.SetStorageValue -storage-name prediction_image
+   adams.flow.transformer.SetStorageValue -storage-name prediction
+  adams.flow.control.Trigger -name compare
+   adams.flow.source.StorageValuesArray -storage-name prediction -storage-name annotation -conversion adams.data.conversion.UnknownToUnknown
+   adams.flow.transformer.ImageSegmentationContainerOperation -operation "adams.data.imagesegmentation.operation.EvaluatePrediction -add-misclassification true"
+   adams.flow.transformer.SpreadSheetInsertColumn -no-copy true -position first -header File -value @{entry}
+   adams.flow.control.Tee -name "append (output)"
+    adams.flow.transformer.SpreadSheetRemoveColumn -position 2,last_1-last
+    adams.flow.transformer.SpreadSheetAppend -storage-name sheet_full
+   adams.flow.transformer.SpreadSheetConvertCells -name percentages -finder "adams.data.spreadsheet.cellfinder.CellRange -columns 4,6,8" -conversion "adams.data.conversion.MathExpression -expression \"X * 100\""
+   adams.flow.control.Tee -name append
+    adams.flow.transformer.SpreadSheetRemoveColumn -position 2,last_1-last
+    adams.flow.control.SubProcess -name "update header"
+     adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (2)" -col 3 -value "Overlap %"
+     adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (4)" -col 5 -value "MIssed %"
+     adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (6)" -col 7 -value "Additional %"
+    adams.flow.transformer.SpreadSheetAppend -storage-name sheet
+   adams.flow.control.SubProcess -name "update header"
+    adams.flow.transformer.SpreadSheetSetHeaderCell -col 3 -value overlap
+    adams.flow.transformer.SpreadSheetConvertCells -finder "adams.data.spreadsheet.cellfinder.CellRange -columns 4,6,8" -conversion "adams.data.conversion.Round -num-decimals 1"
+    adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (2)" -col 4 -value overlap_perc
+    adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (3)" -col 5 -value missed
+    adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (4)" -col 6 -value missed_perc
+    adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (5)" -col 7 -value additional
+    adams.flow.transformer.SpreadSheetSetHeaderCell -name "SpreadSheetSetHeaderCell (6)" -col 8 -value additional_perc
+   adams.flow.transformer.SpreadSheetVariableRowIterator -rows last -columns 3-8
+  adams.flow.control.Trigger -name "compare (pixelwise)"
+   adams.flow.standalone.DeleteStorageValue -storage-name ann_vs_pred
+   adams.flow.source.StorageValuesArray -storage-name prediction -storage-name annotation -conversion adams.data.conversion.UnknownToUnknown
+   adams.flow.transformer.ImageSegmentationContainerOperation -operation "adams.data.imagesegmentation.operation.CompareAnnotationWithPrediction -color-overlap @{color_overlap} -color-missed @{color_missed} -color-additional @{color_additional}"
+   adams.flow.transformer.SetStorageValue -name "SetStorageValue (2)" -storage-name comparison
+   adams.flow.control.Trigger -name "compare layers"
+    adams.flow.source.StringConstants -string @{layers} -conversion adams.data.conversion.StringToString
+    adams.flow.transformer.SetVariable -var-name layer
+    adams.flow.control.Trigger -name "generate overlay for layer"
+     adams.flow.source.StorageValue -storage-name comparison -conversion adams.data.conversion.UnknownToUnknown
+     adams.flow.transformer.GetMapValue -key @{layer}
+     adams.flow.transformer.SetStorageValue -storage-name ann_vs_pred
+     adams.flow.control.Trigger -name overlay
+      adams.flow.standalone.CallableActors
+       adams.flow.source.StorageValue -storage-name ann_vs_pred -conversion adams.data.conversion.UnknownToUnknown
+      adams.flow.source.StorageValue -storage-name annotation -conversion adams.data.conversion.UnknownToUnknown
+      adams.flow.control.ContainerValuePicker -value base -switch-outputs true
+      adams.flow.transformer.Draw -operation "adams.flow.transformer.draw.Image -image-actor StorageValue -alpha 128" -no-copy true
+      adams.flow.transformer.SetStorageValue -storage-name ann_vs_pred_overlay
+  adams.flow.control.Trigger -name "add to pdf"
+   adams.flow.source.StorageValue -storage-name pdf -conversion adams.data.conversion.UnknownToUnknown
+   adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (filename)" -proclet "adams.flow.transformer.pdfproclet.Headline -page-break-before true -headline @{entry}" -type STORAGE -storage-name annotation_image
+   adams.flow.control.ConditionalSubProcess -name "annotation and prediction" -condition "adams.flow.condition.bool.Expression -expression \"@{include_ann_and_pred} = true\""
+    adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (annotation)" -proclet "adams.flow.transformer.pdfproclet.Headline -headline Annotation -font-headline Helvetica-Bold-12" -proclet "adams.flow.transformer.pdfproclet.Image -scale 0.5" -type STORAGE -storage-name annotation_image
+    adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (prediction)" -proclet "adams.flow.transformer.pdfproclet.Headline -headline Prediction -font-headline Helvetica-Bold-12" -proclet "adams.flow.transformer.pdfproclet.Image -scale 0.5" -type STORAGE -storage-name prediction_image
+   adams.flow.control.ConditionalSubProcess -name comparison -condition "adams.flow.condition.bool.Expression -expression \"@{include_comparison} = true\""
+    adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (ann_vs_pred)" -proclet "adams.flow.transformer.pdfproclet.Headline -page-break-before @{include_ann_and_pred} -headline \"Annotation vs prediction\" -font-headline Helvetica-Bold-12" -proclet "adams.flow.transformer.pdfproclet.Image -scale 0.5" -type STORAGE -storage-name ann_vs_pred_overlay
+   adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (stats)" -proclet "adams.flow.transformer.pdfproclet.FixedText -text-content \"overlap: @{overlap} (@{overlap_perc}%)\\\\nmissed: @{missed} (@{missed_perc}%)\\\\nadditional: @{additional} (@{additional_perc}%)\\\\n\"" -type STORAGE -storage-name prediction_image
+   adams.flow.transformer.SetStorageValue -storage-name pdf
+ adams.flow.control.CloseCallableDisplay -callable ProgressBar
+ adams.flow.control.Trigger -name "total stats"
+  adams.flow.source.StorageValue -storage-name sheet -conversion adams.data.conversion.UnknownToUnknown
+  adams.flow.transformer.Convert -conversion "adams.data.conversion.SpreadSheetAddFormulaRow -formula =sum(@1:@&) -columns 2,4,6"
+  adams.flow.control.Tee -name "get totals"
+   adams.flow.control.Tee -name overlap
+    adams.flow.transformer.SpreadSheetGetCell -row last -col 2
+    adams.flow.transformer.SetVariable -var-name total_overlap
+   adams.flow.control.Tee -name missed
+    adams.flow.transformer.SpreadSheetGetCell -row last -col 4
+    adams.flow.transformer.SetVariable -var-name total_missed
+   adams.flow.control.Tee -name additional
+    adams.flow.transformer.SpreadSheetGetCell -row last -col 6
+    adams.flow.transformer.SetVariable -var-name total_additional
+   adams.flow.control.Trigger -name "total overlap %"
+    adams.flow.source.MathExpression -expression "@{total_overlap} / (@{total_overlap} + @{total_missed}) * 100" -round-output true -num-decimals 1
+    adams.flow.transformer.SetVariable -var-name total_overlap_perc
+   adams.flow.control.Trigger -name "total additional %"
+    adams.flow.source.MathExpression -expression "@{total_additional} / (@{total_overlap} + @{total_missed}) * 100" -round-output true -num-decimals 1
+    adams.flow.transformer.SetVariable -var-name total_additional_perc
+   adams.flow.control.Trigger -name "total stats"
+    adams.flow.source.CombineVariables -expression "Global %\\n- overlap: @{total_overlap_perc}\\n- additional: @{total_additional_perc}" -conversion adams.data.conversion.StringToString
+    adams.flow.transformer.SetVariable -var-name total_stats
+  adams.flow.transformer.SetStorageValue -storage-name sheet
+ adams.flow.control.Trigger -name "add stats table"
+  adams.flow.source.StorageValue -storage-name pdf -conversion adams.data.conversion.UnknownToUnknown
+  adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (table)" -proclet "adams.flow.transformer.pdfproclet.Headline -page-break-before true -headline Statistics" -proclet "adams.flow.transformer.pdfproclet.SpreadSheet -font-table-header Helvetica-Bold-10 -font-general-content Helvetica-Normal-10 -font-numeric-content Helvetica-Normal-10 -reader \"adams.data.io.input.CsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet\" -rel-col-width 0.25 -rel-col-width 0.125 -rel-col-width 0.125 -rel-col-width 0.125 -rel-col-width 0.125 -rel-col-width 0.125 -rel-col-width 0.125" -type STORAGE -storage-name sheet
+  adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (total stats)" -proclet "adams.flow.transformer.pdfproclet.FixedText -text-content @{total_stats}" -type STORAGE -storage-name sheet
+  adams.flow.transformer.SetStorageValue -storage-name pdf
+ adams.flow.control.Trigger -name overlap
+  adams.flow.source.StorageValue -storage-name sheet -conversion adams.data.conversion.UnknownToUnknown
+  adams.flow.control.ClearCallableDisplay -callable "SequencePlotter (y: 0-1)"
+  adams.flow.control.Tee -name plot
+   adams.flow.transformer.SpreadSheetSort -sort-column 3
+   adams.flow.transformer.SpreadSheetPlotGenerator -generator "adams.flow.transformer.plotgenerator.SimplePlotGenerator -columns 3"
+   adams.flow.sink.CallableSink -callable "SequencePlotter (y: 0-1)"
+  adams.flow.control.Tee -name screenshot
+   adams.flow.control.CallableActorScreenshot -callable "SequencePlotter (y: 0-1)" -output-type BUFFEREDIMAGE_CONTAINER -filename-generator adams.core.io.DefaultFilenameGenerator -writer adams.gui.print.NullWriter
+   adams.flow.transformer.SetStorageValue -storage-name overlap
+  adams.flow.control.CloseCallableDisplay -callable "SequencePlotter (y: 0-1)"
+ adams.flow.control.Trigger -name "add graphs"
+  adams.flow.source.StorageValue -storage-name pdf -conversion adams.data.conversion.UnknownToUnknown
+  adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (heading)" -proclet "adams.flow.transformer.pdfproclet.Headline -page-break-before true -headline Graphs" -proclet "adams.flow.transformer.pdfproclet.FixedText -text-content \"Graphs are sorted by numeric value, to better see overall performance, not by image name.\" -font-content Helvetica-Normal-10" -type STORAGE -storage-name title
+  adams.flow.transformer.PDFAppendDocument -name "PDFAppendDocument (overlap)" -proclet "adams.flow.transformer.pdfproclet.Image -scale 0.8" -type STORAGE -storage-name overlap
+  adams.flow.transformer.SetStorageValue -storage-name pdf
+ adams.flow.control.Trigger -name "close pdf"
+  adams.flow.source.StorageValue -storage-name pdf -conversion adams.data.conversion.UnknownToUnknown
+  adams.flow.sink.PDFCloseDocument
+ adams.flow.control.Trigger -name "save csv"
+  adams.flow.source.StorageValue -storage-name sheet_full -conversion adams.data.conversion.UnknownToUnknown
+  adams.flow.sink.SpreadSheetFileWriter -output @{output_csv} -writer adams.data.io.output.CsvSpreadSheetWriter
