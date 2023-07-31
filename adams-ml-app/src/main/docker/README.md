@@ -5,14 +5,14 @@
 **NB:** Downloads the .deb snapshot rather than building it. 
 
 ```
-docker build -t theadamsflow/adams-ml-app:latest .
+docker build -t waikatodatamining/adams-ml-app:latest .
 ```
 
 ## Tag
 
 ```
 docker tag \
-  theadamsflow/adams-ml-app:latest \
+  waikatodatamining/adams-ml-app:latest \
   public-push.aml-repo.cms.waikato.ac.nz:443/theadamsflow/adams-ml-app:latest
 ```
 
@@ -27,7 +27,7 @@ docker push public-push.aml-repo.cms.waikato.ac.nz:443/theadamsflow/adams-ml-app
 Docker hub:
 
 ```
-docker push theadamsflow/adams-ml-app:latest
+docker push waikatodatamining/adams-ml-app:latest
 ```
 
 
@@ -36,5 +36,5 @@ docker push theadamsflow/adams-ml-app:latest
 Start the image as follows:
 
 ```
-docker run -it theadamsflow/adams-ml-app:latest 
+docker run -it waikatodatamining/adams-ml-app:latest 
 ```

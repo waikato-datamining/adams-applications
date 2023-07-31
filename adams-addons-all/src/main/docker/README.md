@@ -5,14 +5,14 @@
 **NB:** Downloads the .deb snapshot rather than building it. 
 
 ```
-docker build -t theadamsflow/adams-addons-all:latest .
+docker build -t waikatodatamining/adams-addons-all:latest .
 ```
 
 ## Tag
 
 ```
 docker tag \
-  theadamsflow/adams-addons-all:latest \
+  waikatodatamining/adams-addons-all:latest \
   public-push.aml-repo.cms.waikato.ac.nz:443/theadamsflow/adams-addons-all:latest
 ```
 
@@ -27,7 +27,7 @@ docker push public-push.aml-repo.cms.waikato.ac.nz:443/theadamsflow/adams-addons
 Docker hub:
 
 ```
-docker push theadamsflow/adams-addons-all:latest
+docker push waikatodatamining/adams-addons-all:latest
 ```
 
 
@@ -36,5 +36,5 @@ docker push theadamsflow/adams-addons-all:latest
 Start the image as follows:
 
 ```
-docker run -it theadamsflow/adams-addons-all:latest 
+docker run -it waikatodatamining/adams-addons-all:latest 
 ```
