@@ -10,7 +10,7 @@ RUN mv /etc/apt/sources.list /etc/apt/sources.list.original \
     && cat /etc/apt/sources.list.original | sed s/"archive.ubuntu.com"/"$UBUNTU_MIRROR"/g > /etc/apt/sources.list \
     && apt-get -y update \
     && apt-get -y upgrade \
-    && apt-get -y install openjdk-11-jre-headless \
+    && apt-get -y install openjdk-11-jdk \
     && apt-get -y install wget bash \
     && rm -rf /var/lib/apt/lists/*
 
