@@ -1,21 +1,10 @@
 # Project: adams
-# Date: 2011-03-10 16:30:07
+# Date: 2024-01-09 21:34:48
 # User: fracpete
 # Charset: UTF-8
+# Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-json,adams-math,adams-matlab,adams-meta,adams-ml,adams-net,adams-odf,adams-opencv,adams-pdf,adams-pyro4,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
 #
-adams.flow.control.Flow
-	-annotation
-	This flow demonstrates how to load an ARFF file from\nthe internet. It loads the UCI dataset hosted by TunedIT.
-	-actor
-		adams.flow.source.URLSupplier
-			-url
-			http://tunedit.org/download/UCI/iris.arff
-	-actor
-		adams.flow.transformer.WekaFileReader
-			-loader
-				weka.core.converters.ArffLoader
-	-actor
-		adams.flow.sink.WekaInstancesDisplay
-			-writer
-				adams.gui.print.NullWriter
-
+adams.flow.control.Flow -annotation "This flow demonstrates how to load an ARFF file from\\nthe internet. It loads the UCI dataset hosted by TunedIT." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
+ adams.flow.source.URLSupplier -url https://raw.githubusercontent.com/waikato-datamining/adams-base/master/adams-weka/src/main/flows/data/iris.arff
+ adams.flow.transformer.WekaFileReader -loader weka.core.converters.ArffLoader
+ adams.flow.sink.WekaInstancesDisplay -display-type adams.flow.core.displaytype.Default -writer adams.gui.print.NullWriter
