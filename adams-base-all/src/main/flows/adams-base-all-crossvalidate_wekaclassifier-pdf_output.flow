@@ -2,7 +2,6 @@
 # Date: 2019-12-19 11:48:29
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-access,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-json,adams-jython,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka,adams-xml,adams-yaml
 #
 adams.flow.control.Flow -annotation "Cross-validates a classifier and outputs\\nthe evaluation summary." -flow-execution-listener adams.flow.execution.NullListener
  adams.flow.standalone.CallableActors
