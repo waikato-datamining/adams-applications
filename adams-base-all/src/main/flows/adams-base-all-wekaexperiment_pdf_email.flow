@@ -2,7 +2,6 @@
 # Date: 2018-12-20 16:04:03
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-access,adams-compress,adams-core,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jython,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka
 #
 adams.flow.control.Flow -annotation "Runs a predefined experiment on the anneal/iris/labor datasets \\nlocated in the \\\"data\\\" directory.\\nGenerates a PDF from the CSV output of the Experiment evaluation \\nand sends it as email.\\nNB: the \\\"Email.props\\\" configuration file must be configured correctly\\nfor this to work. E.g., you can place a copy of this file in $HOME/.adams\\nand set the correct parameters for your email setup,\\nas well as a valid recipient email address." -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory ${FLOWS}/data -regexp (anneal|iris|labor).arff"

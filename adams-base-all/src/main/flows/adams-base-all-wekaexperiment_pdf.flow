@@ -2,7 +2,6 @@
 # Date: 2018-12-20 16:03:46
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-access,adams-compress,adams-core,adams-event,adams-excel,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-imagemagick,adams-imaging-openimaj,adams-jython,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-python,adams-rsync,adams-spreadsheet,adams-timeseries,adams-visualstats,adams-weka
 #
 adams.flow.control.Flow -annotation "Runs a predefined experiment on the anneal/iris/labor\\ndatasets located in the \\\"data\\\" directory.\\nGenerates a PDF from the CSV output of the\\nExperiment evaluation and stores that as the\\nfollowing file:\\n ${TMP}/out.pdf" -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.source.FileSystemSearch -output-array true -search "adams.flow.source.filesystemsearch.LocalFileSearch -directory ${FLOWS}/data -regexp (anneal|iris|labor).arff"
