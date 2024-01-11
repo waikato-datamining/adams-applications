@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2023-03-28 14:17:32
+# Date: 2024-01-11 16:53:04
 # User: fracpete
 # Charset: UTF-8
 # Modules: adams-annotator,adams-audio,adams-core,adams-docker,adams-event,adams-excel,adams-ffmpeg,adams-groovy,adams-imaging,adams-imaging-boofcv,adams-imaging-ext,adams-json,adams-math,adams-meta,adams-ml,adams-net,adams-odf,adams-opencv,adams-pdf,adams-pyro4,adams-python,adams-random,adams-rats-core,adams-redis,adams-spreadsheet,adams-terminal,adams-video,adams-visualstats,adams-weka,adams-xml,adams-yaml
@@ -23,7 +23,7 @@ adams.flow.control.Flow -annotation "Plots statistics from a Detectron2 metrics.
   adams.flow.transformer.Convert -conversion adams.data.conversion.StringToJson
   adams.flow.transformer.GetJsonKeys -output-array true -sort-keys true
   adams.flow.transformer.StringMatcher -regexp (data_time|eta_seconds) -invert true
-  adams.flow.transformer.SelectArraySubset
+  adams.flow.transformer.SelectArraySubset -name "Select statistic" -short-title true
   adams.flow.transformer.SetStorageValue -storage-name stats
  adams.flow.control.Trigger -name plot
   adams.flow.source.StorageValue -storage-name data -conversion adams.data.conversion.UnknownToUnknown
