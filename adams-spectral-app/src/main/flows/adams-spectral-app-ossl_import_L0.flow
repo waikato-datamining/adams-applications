@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2024-08-21 16:45:22
+# Date: 2024-08-22 11:06:59
 # User: fracpete
 # Charset: UTF-8
 # Modules: adams-bootstrapp,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-heatmap,adams-imaging,adams-imaging-boofcv,adams-jep,adams-json,adams-math,adams-matlab,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-pyro4,adams-python,adams-r,adams-rats-core,adams-rats-net,adams-rats-redis,adams-rats-rest,adams-rats-webservice,adams-redis,adams-rest,adams-security,adams-spectral-2dim-core,adams-spectral-2dim-handheld,adams-spectral-2dim-r,adams-spectral-2dim-rats,adams-spectral-2dim-webservice,adams-spectral-3way-core,adams-spectral-app,adams-spreadsheet,adams-terminal,adams-visualstats,adams-webservice,adams-webservice-core,adams-weka-lts,adams-xml,adams-yaml
@@ -119,9 +119,11 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
     adams.flow.source.FileSupplier -file ${TMP}/ossl.csv
     adams.flow.transformer.SampleDataFileReader -output-array true -reader "adams.data.io.input.MultiColumnSpreadSheetSampleDataReader -reader \"adams.data.io.input.FastCsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -missing ^$\" -col-id id.layer_uuid_txt -cols-sampledata 1,3-last -cols-numeric 3-last -row-finder adams.data.spreadsheet.rowfinder.AllFinder"
     adams.flow.control.Tee -name store
-     adams.flow.transformer.ArrayToSequence
-     adams.flow.transformer.SampleDataDbWriter -merge true -standalone-reports true -pre-processor adams.flow.transformer.report.NoPreProcessing
-     adams.flow.transformer.IncVariable -var-name count
+     adams.flow.control.Tee -name "# sample data"
+      adams.flow.transformer.ArrayLength
+      adams.flow.transformer.SetVariable -var-name records
+     adams.flow.transformer.BulkSampleDataDbWriter -data-type STRING -data-type NUMERIC -data-type BOOLEAN -skip-fields true -new-connection true
+     adams.flow.transformer.IncVariable -var-name count -inc-int @{records}
     adams.flow.control.Trigger -name info
      adams.flow.source.Variable -var-name count -conversion adams.data.conversion.StringToString
      adams.flow.sink.CallableSink -callable Info
@@ -141,9 +143,11 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
     adams.flow.source.FileSupplier -file ${TMP}/ossl.csv
     adams.flow.transformer.SampleDataFileReader -output-array true -reader "adams.data.io.input.MultiColumnSpreadSheetSampleDataReader -reader \"adams.data.io.input.FastCsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -missing ^$\" -col-id id.layer_uuid_txt -cols-sampledata 1,3-last -cols-numeric 4-8,17-19 -row-finder adams.data.spreadsheet.rowfinder.AllFinder"
     adams.flow.control.Tee -name store
-     adams.flow.transformer.ArrayToSequence
-     adams.flow.transformer.SampleDataDbWriter -merge true -standalone-reports true -pre-processor adams.flow.transformer.report.NoPreProcessing
-     adams.flow.transformer.IncVariable -var-name count
+     adams.flow.control.Tee -name "# sample data"
+      adams.flow.transformer.ArrayLength
+      adams.flow.transformer.SetVariable -var-name records
+     adams.flow.transformer.BulkSampleDataDbWriter -data-type STRING -data-type NUMERIC -data-type BOOLEAN -skip-fields true -new-connection true
+     adams.flow.transformer.IncVariable -var-name count -inc-int @{records}
     adams.flow.control.Trigger -name info
      adams.flow.source.Variable -var-name count -conversion adams.data.conversion.StringToString
      adams.flow.sink.CallableSink -callable Info
