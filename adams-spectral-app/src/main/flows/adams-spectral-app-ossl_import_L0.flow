@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2024-08-21 16:12:42
+# Date: 2024-08-21 16:45:22
 # User: fracpete
 # Charset: UTF-8
 # Modules: adams-bootstrapp,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-heatmap,adams-imaging,adams-imaging-boofcv,adams-jep,adams-json,adams-math,adams-matlab,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-pyro4,adams-python,adams-r,adams-rats-core,adams-rats-net,adams-rats-redis,adams-rats-rest,adams-rats-webservice,adams-redis,adams-rest,adams-security,adams-spectral-2dim-core,adams-spectral-2dim-handheld,adams-spectral-2dim-r,adams-spectral-2dim-rats,adams-spectral-2dim-webservice,adams-spectral-3way-core,adams-spectral-app,adams-spreadsheet,adams-terminal,adams-visualstats,adams-webservice,adams-webservice-core,adams-weka-lts,adams-xml,adams-yaml
@@ -8,6 +8,7 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
  adams.flow.standalone.CallableActors
   adams.flow.sink.Display -name Info -short-title true -display-type adams.flow.core.displaytype.Default -writer adams.data.io.output.NullWriter
   adams.flow.sink.Display -name "Total records" -short-title true -display-type adams.flow.core.displaytype.Default -x -3 -writer adams.data.io.output.NullWriter
+ adams.flow.standalone.SetVariable -name waveno_check_col -annotation "the waveno that is checked to determine whether spectra present or not" -var-name waveno_check_col -var-value 100
  adams.flow.source.Start
  adams.flow.control.Trigger -name urls
   adams.flow.source.StringConstants -output-array true -string https://storage.googleapis.com/soilspec4gg-public/ossl_soilsite_L0_v1.2.csv.gz -string https://storage.googleapis.com/soilspec4gg-public/ossl_soillab_L0_v1.2.csv.gz -string https://storage.googleapis.com/soilspec4gg-public/ossl_mir_L0_v1.2.csv.gz -string https://storage.googleapis.com/soilspec4gg-public/ossl_visnir_L0_v1.2.csv.gz -conversion adams.data.conversion.StringToString
@@ -64,7 +65,7 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
     adams.flow.transformer.IncVariable -var-name total -inc-int @{rows} -output-variable-value true
     adams.flow.transformer.Convert -conversion adams.data.conversion.AnyToString
     adams.flow.sink.CallableSink -callable "Total records"
-   adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.Invert -row-finder \"adams.data.spreadsheet.rowfinder.MissingValue -att-range 15\"" -create-view true
+   adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.Invert -row-finder \"adams.data.spreadsheet.rowfinder.MissingValue -att-range @{waveno_check_col}\"" -create-view true
    adams.flow.control.Block -condition "adams.flow.condition.bool.Not -condition adams.flow.condition.bool.HasRows"
    adams.flow.control.Tee -name "save chunk"
     adams.flow.sink.SpreadSheetFileWriter -output ${TMP}/ossl.csv -writer adams.data.io.output.CsvSpreadSheetWriter
@@ -88,7 +89,7 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
     adams.flow.transformer.IncVariable -var-name total -inc-int @{rows} -output-variable-value true
     adams.flow.transformer.Convert -conversion adams.data.conversion.AnyToString
     adams.flow.sink.CallableSink -callable "Total records"
-   adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.Invert -row-finder \"adams.data.spreadsheet.rowfinder.MissingValue -att-range 15\"" -create-view true
+   adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.Invert -row-finder \"adams.data.spreadsheet.rowfinder.MissingValue -att-range @{waveno_check_col}\"" -create-view true
    adams.flow.control.Block -condition "adams.flow.condition.bool.Not -condition adams.flow.condition.bool.HasRows"
    adams.flow.control.Tee -name "save chunk"
     adams.flow.sink.SpreadSheetFileWriter -output ${TMP}/ossl.csv -writer adams.data.io.output.CsvSpreadSheetWriter
