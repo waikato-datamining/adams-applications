@@ -84,6 +84,29 @@
         <exclude>**/META-INF/**</exclude>
       </excludes>
     </fileSet>
+
+    <fileSet>
+      <directory>${project.build.directory}/flows-dependencies/flows/</directory>
+      <outputDirectory>flows</outputDirectory>
+      <includes>
+        <include>adams-spectral*</include>
+      </includes>
+    </fileSet>
+
+    <fileSet>
+      <directory>${project.build.directory}/flows-dependencies/flows/data</directory>
+      <outputDirectory>flows/data</outputDirectory>
+      <includes>
+        <include>141009*.0</include>
+        <include>bolts.arff</include>
+        <include>scio*</include>
+        <include>dummy_spectrum*</include>
+        <include>*.dat</include>
+        <include>merged.csv</include>
+        <include>*threeway*</include>
+        <include>*multitarget*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
   <dependencySets>
