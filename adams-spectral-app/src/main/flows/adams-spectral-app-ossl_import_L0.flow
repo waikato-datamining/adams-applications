@@ -1,5 +1,5 @@
 # Project: adams
-# Date: 2024-08-23 13:31:53
+# Date: 2024-08-23 13:45:44
 # User: fracpete
 # Charset: UTF-8
 # Modules: adams-bootstrapp,adams-compress,adams-core,adams-db,adams-event,adams-excel,adams-heatmap,adams-imaging,adams-imaging-boofcv,adams-jep,adams-json,adams-math,adams-matlab,adams-meta,adams-ml,adams-net,adams-odf,adams-pdf,adams-pyro4,adams-python,adams-r,adams-rats-core,adams-rats-net,adams-rats-redis,adams-rats-rest,adams-rats-webservice,adams-redis,adams-rest,adams-security,adams-spectral-2dim-core,adams-spectral-2dim-handheld,adams-spectral-2dim-r,adams-spectral-2dim-rats,adams-spectral-2dim-webservice,adams-spectral-3way-core,adams-spectral-app,adams-spreadsheet,adams-terminal,adams-visualstats,adams-webservice,adams-webservice-core,adams-weka-lts,adams-xml,adams-yaml
@@ -55,7 +55,7 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
   adams.flow.control.Tee -name "info (2)"
    adams.flow.transformer.StringInsert -position first -value "importing: "
    adams.flow.sink.CallableSink -callable "Total records"
-  adams.flow.control.ConditionalTee -name mir -condition "adams.flow.condition.bool.Expression -expression \"(\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (matches(\\\\\\\"X\\\\\\\", \\\\\\\".*mir.*\\\\\\\") and (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"mir\\\\\\\"))\""
+  adams.flow.control.ConditionalTee -name mir -condition "adams.flow.condition.bool.Expression -expression \"matches(\\\\\\\"X\\\\\\\", \\\\\\\".*mir.*\\\\\\\") and ((\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"mir\\\\\\\"))\""
    adams.flow.transformer.SetVariable -name reset -var-name count -var-value 0
    adams.flow.transformer.SetVariable -name "reset (2)" -var-name total -var-value 0
    adams.flow.transformer.SpreadSheetFileReader -reader "adams.data.io.input.FastCsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -missing ^$ -chunk-size @{chunk_size}"
@@ -81,7 +81,7 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
     adams.flow.control.Trigger -name info
      adams.flow.source.Variable -var-name count -conversion adams.data.conversion.StringToString
      adams.flow.sink.CallableSink -callable "Imported records"
-  adams.flow.control.ConditionalTee -name visnir -condition "adams.flow.condition.bool.Expression -expression \"(\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (matches(\\\\\\\"X\\\\\\\", \\\\\\\".*visnir.*\\\\\\\") and (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"visnir\\\\\\\"))\""
+  adams.flow.control.ConditionalTee -name visnir -condition "adams.flow.condition.bool.Expression -expression \"matches(\\\\\\\"X\\\\\\\", \\\\\\\".*visnir.*\\\\\\\") and ((\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"visnir\\\\\\\"))\""
    adams.flow.transformer.SetVariable -name reset -var-name count -var-value 0
    adams.flow.transformer.SetVariable -name "reset (2)" -var-name total -var-value 0
    adams.flow.transformer.SpreadSheetFileReader -reader "adams.data.io.input.FastCsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -missing ^$ -chunk-size @{chunk_size}"
@@ -107,7 +107,7 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
     adams.flow.control.Trigger -name info
      adams.flow.source.Variable -var-name count -conversion adams.data.conversion.StringToString
      adams.flow.sink.CallableSink -callable "Imported records"
-  adams.flow.control.ConditionalTee -name soillab -condition "adams.flow.condition.bool.Expression -expression \"(\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (matches(\\\\\\\"X\\\\\\\", \\\\\\\".*soillab.*\\\\\\\") and (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"soillab\\\\\\\"))\""
+  adams.flow.control.ConditionalTee -name soillab -condition "adams.flow.condition.bool.Expression -expression \"matches(\\\\\\\"X\\\\\\\", \\\\\\\".*soillab.*\\\\\\\") and ((\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"soillab\\\\\\\"))\""
    adams.flow.transformer.SetVariable -name reset -var-name count -var-value 0
    adams.flow.transformer.SetVariable -name "reset (2)" -var-name total -var-value 0
    adams.flow.transformer.SpreadSheetFileReader -reader "adams.data.io.input.FastCsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -missing ^$ -chunk-size @{chunk_size}"
@@ -131,7 +131,7 @@ adams.flow.control.Flow -annotation "Imports the OSSL L0 spectral data into an A
     adams.flow.control.Trigger -name info
      adams.flow.source.Variable -var-name count -conversion adams.data.conversion.StringToString
      adams.flow.sink.CallableSink -callable "Imported records"
-  adams.flow.control.ConditionalTee -name soilsite -condition "adams.flow.condition.bool.Expression -expression \"(\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (matches(\\\\\\\"X\\\\\\\", \\\\\\\".*soilsite.*\\\\\\\") and (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"soilsite\\\\\\\"))\""
+  adams.flow.control.ConditionalTee -name soilsite -condition "adams.flow.condition.bool.Expression -expression \"matches(\\\\\\\"X\\\\\\\", \\\\\\\".*soilsite.*\\\\\\\") and ((\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"all\\\\\\\") or (\\\\\\\"@{import_type}\\\\\\\" = \\\\\\\"soilsite\\\\\\\"))\""
    adams.flow.transformer.SetVariable -name reset -var-name count -var-value 0
    adams.flow.transformer.SetVariable -name "reset (2)" -var-name total -var-value 0
    adams.flow.transformer.SpreadSheetFileReader -reader "adams.data.io.input.FastCsvSpreadSheetReader -data-row-type adams.data.spreadsheet.DenseDataRow -spreadsheet-type adams.data.spreadsheet.DefaultSpreadSheet -missing ^$ -chunk-size @{chunk_size}"
