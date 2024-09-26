@@ -874,6 +874,21 @@
         <artifactId>latex-maven-plugin</artifactId>
       </plugin>
 
+      <!-- updates/uses 'src/license/THIRD-PARTY.properties' for missing libraries -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <useMissingFile>true</useMissingFile>
+        </configuration>
+      </plugin>
+
+      <!-- for generating the license information -->
+      <plugin>
+        <groupId>org.bsc.maven</groupId>
+        <artifactId>maven-processor-plugin</artifactId>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
@@ -912,25 +927,10 @@
         </executions>
       </plugin>
 
-      <!-- for generating the license information -->
-      <plugin>
-        <groupId>org.bsc.maven</groupId>
-        <artifactId>maven-processor-plugin</artifactId>
-      </plugin>
-      
       <!-- generates dependency graphs, get pdfs/flows/sources -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-
-      <!-- updates/uses 'src/license/THIRD-PARTY.properties' for missing libraries -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <useMissingFile>true</useMissingFile>
-        </configuration>
       </plugin>
 
       <plugin>

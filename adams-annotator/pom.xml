@@ -375,7 +375,16 @@
         <groupId>com.github.fracpete</groupId>
         <artifactId>latex-maven-plugin</artifactId>
       </plugin>
-            
+
+      <!-- updates/uses 'src/license/THIRD-PARTY.properties' for missing libraries -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <useMissingFile>true</useMissingFile>
+        </configuration>
+      </plugin>
+
       <!-- for generating the license information -->
       <plugin>
         <groupId>org.bsc.maven</groupId>
@@ -443,15 +452,6 @@
             </configuration>
           </execution>
         </executions>
-      </plugin>
-
-      <!-- updates/uses 'src/license/THIRD-PARTY.properties' for missing libraries -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>license-maven-plugin</artifactId>
-        <configuration>
-          <useMissingFile>true</useMissingFile>
-        </configuration>
       </plugin>
 
       <plugin>
