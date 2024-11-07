@@ -2,7 +2,6 @@
 # Date: 2022-12-13 14:03:31
 # User: fracpete
 # Charset: UTF-8
-# Modules: adams-compress,adams-core,adams-db,adams-event,adams-json,adams-math,adams-meta,adams-ml,adams-net,adams-pdf,adams-processing-core,adams-processing-mysql,adams-processing-spectral-2dim,adams-processing-spectral-app,adams-random,adams-rats-core,adams-rats-net,adams-rats-redis,adams-rats-rest,adams-rats-webservice,adams-redis,adams-rest,adams-rsync,adams-security,adams-spectral-2dim-core,adams-spectral-2dim-rats,adams-spectral-2dim-webservice,adams-spreadsheet,adams-terminal,adams-visualstats,adams-webservice,adams-webservice-core,adams-weka-lts,adams-xml
 #
 adams.flow.control.Flow -annotation "Imports the Africa Soil Information Service (AfSIS) database into ADAMS:\\nhttps://github.com/spectral-datasets/afsis-db-sqlite" -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
  adams.flow.standalone.CallableActors
