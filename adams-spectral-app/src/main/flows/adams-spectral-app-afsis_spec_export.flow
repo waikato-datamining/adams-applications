@@ -1,0 +1,99 @@
+# Project: adams
+# Date: 2022-12-13 14:03:31
+# User: fracpete
+# Charset: UTF-8
+# Modules: adams-compress,adams-core,adams-db,adams-event,adams-json,adams-math,adams-meta,adams-ml,adams-net,adams-pdf,adams-processing-core,adams-processing-mysql,adams-processing-spectral-2dim,adams-processing-spectral-app,adams-random,adams-rats-core,adams-rats-net,adams-rats-redis,adams-rats-rest,adams-rats-webservice,adams-redis,adams-rest,adams-rsync,adams-security,adams-spectral-2dim-core,adams-spectral-2dim-rats,adams-spectral-2dim-webservice,adams-spreadsheet,adams-terminal,adams-visualstats,adams-webservice,adams-webservice-core,adams-weka-lts,adams-xml
+#
+adams.flow.control.Flow -annotation "Imports the Africa Soil Information Service (AfSIS) database into ADAMS:\\nhttps://github.com/spectral-datasets/afsis-db-sqlite" -flow-execution-listener adams.flow.execution.NullListener -flow-restart-manager adams.flow.control.flowrestart.NullManager
+ adams.flow.standalone.CallableActors
+  adams.flow.sink.Display -name Info -short-title true -display-type adams.flow.core.displaytype.Default -writer adams.data.io.output.NullWriter
+ adams.flow.standalone.SetVariable -name db_download_url -var-name db_download_url -var-value https://github.com/spectral-datasets/afsis-db-sqlite/raw/master/ICRAF_ISRIC_VNIR_Soil_Database.db.gz
+ adams.flow.standalone.SetVariable -name db_file -var-name db_file -var-value ICRAF_ISRIC_VNIR_Soil_Database.db
+ adams.flow.standalone.SetVariable -name db_file_compressed -var-name db_file_compressed -var-value ${FLOWS}/afis/output/@{db_file}.gz -value-type FILE_FORWARD_SLASHES -expand-value true
+ adams.flow.standalone.SetVariable -name db_file_uncompressed -var-name db_file_uncompressed -var-value ${FLOWS}/afis/output/@{db_file} -value-type FILE_FORWARD_SLASHES -expand-value true
+ adams.flow.standalone.SetVariable -name jdbc_sqlite -var-name jdbc_sqlite -var-value jdbc:sqlite:@{db_file_uncompressed} -expand-value true
+ adams.flow.source.Start
+ adams.flow.control.Trigger -name "prompt user"
+  adams.flow.standalone.SetVariable -name "restore file" -var-name restore -var-value @{flow_filename_long}.props -value-type FILE_FORWARD_SLASHES -expand-value true
+  adams.flow.source.EnterManyValues -name Parameters -stop-if-canceled true -value "adams.flow.source.valuedefinition.DirectoryValueDefinition -name output_dir -display \"Output dir\" -help \"where to store the spectral files\" -file-chooser-title \"Output dir\" -use-forward-slashes true" -value "adams.flow.source.valuedefinition.GOEValueDefinition -name writer -display Writer -help \"the writer to use for outputting the spectral data\" -super-class adams.data.io.output.AbstractSpectrumWriter -default-class adams.data.io.output.SimpleSpectrumWriter" -output-type MAP -restoration-enabled true -restoration-file @{restore}
+  adams.flow.transformer.MapToVariables
+ adams.flow.control.ConditionalTrigger -name "download DB?" -condition "adams.flow.condition.bool.PromptUser -message \"Do you want to download the AFSIS database?\""
+  adams.flow.source.URLSupplier -url @{db_download_url}
+  adams.flow.control.Trigger -name "delete old files"
+   adams.flow.source.VariablesArray -var-name db_file_uncompressed -var-name db_file_compressed -conversion adams.data.conversion.StringToString
+   adams.flow.transformer.ArrayToSequence
+   adams.flow.transformer.DeleteFile
+  adams.flow.control.Tee -name info
+   adams.flow.transformer.Convert -conversion adams.data.conversion.AnyToString
+   adams.flow.transformer.StringInsert -position first -value Downloading:\\n
+   adams.flow.sink.CallableSink -callable Info
+  adams.flow.control.Tee -name download
+   adams.flow.sink.DownloadFile -output @{db_file_compressed}
+  adams.flow.control.Trigger -name decompress
+   adams.flow.source.Variable -var-name db_file_compressed -conversion adams.data.conversion.StringToString
+   adams.flow.control.Tee -name info
+    adams.flow.transformer.StringInsert -position first -value Decompressing:\\n
+    adams.flow.sink.CallableSink -callable Info
+   adams.flow.transformer.GUNZIP -alt-filename @{db_file} -buffer 10240
+   adams.flow.sink.CallableSink -callable Info
+ adams.flow.control.ConditionalTrigger -name "export database?" -condition "adams.flow.condition.bool.PromptUser -message \"Do you want to export the AFSIS database?\""
+  adams.flow.standalone.DatabaseConnection -url @{jdbc_sqlite} -data-type-setup adams.db.datatype.DummySetup
+  adams.flow.source.Start
+  adams.flow.control.Trigger -name "sample codes lookup"
+   adams.flow.source.SpreadSheetDbReader -type-mapper adams.data.spreadsheet.sql.DefaultTypeMapper -query "select batch_labid, sampleno from icraf_sample_codes" -data-row-type adams.data.spreadsheet.DenseDataRow
+   adams.flow.transformer.LookUpInit -storage-name labid_sampleno -key-column batch_labid -value-column sampleno
+  adams.flow.control.Trigger -name elemental_composition_clay
+   adams.flow.source.SpreadSheetDbReader -type-mapper adams.data.spreadsheet.sql.DefaultTypeMapper -query "select * from elemental_composition_clay" -data-row-type adams.data.spreadsheet.DenseDataRow
+   adams.flow.transformer.SetStorageValue -storage-name elemental_composition_clay
+  adams.flow.control.Trigger -name elemental_composition_soil
+   adams.flow.source.SpreadSheetDbReader -type-mapper adams.data.spreadsheet.sql.DefaultTypeMapper -query "select * from elemental_composition_soil" -data-row-type adams.data.spreadsheet.DenseDataRow
+   adams.flow.transformer.SetStorageValue -storage-name elemental_composition_soil
+  adams.flow.control.Trigger -name "export spectra"
+   adams.flow.source.SpreadSheetDbReader -type-mapper adams.data.spreadsheet.sql.DefaultTypeMapper -query "select * from asd_spectra" -data-row-type adams.data.spreadsheet.DenseDataRow
+   adams.flow.transformer.Convert -conversion "adams.data.conversion.SpreadSheetRowsToSpectra -wave-numbers-in-header true -wave-number-regexp wave(.*) -cols-amplitude 2-last -rows-amplitude 1-last -col-id batch_labid -instrument AFSIS"
+   adams.flow.transformer.SetStorageValue -storage-name spectra
+   adams.flow.control.Trigger -name "iterate spectra"
+    adams.flow.source.StorageValue -storage-name spectra -conversion adams.data.conversion.UnknownToUnknown
+    adams.flow.transformer.ArrayToSequence
+    adams.flow.control.Tee -name "determine sampleno"
+     adams.flow.transformer.GetID
+     adams.flow.transformer.LookUp -storage-name labid_sampleno -missing-key OUTPUT_KEY
+     adams.flow.transformer.SetVariable -var-name sampleno
+    adams.flow.control.ConditionalTrigger -name "add elemental clay/soil" -condition "adams.flow.condition.bool.Expression -expression \"\\\\\\\"@{sampleno}\\\\\\\" != \\\\\\\"#N/A\\\\\\\"\""
+     adams.flow.source.Start
+     adams.flow.control.Trigger -name elemental_composition_clay
+      adams.flow.source.StorageValue -storage-name elemental_composition_clay -conversion adams.data.conversion.UnknownToUnknown
+      adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.ByStringComparison -att-index sampleno -minimum @{sampleno} -minimum-included true -maximum @{sampleno} -maximum-included true" -create-view true
+      adams.flow.transformer.DeleteStorageValue -storage-name report_clay
+      adams.flow.control.ConditionalTee -name "any data?" -condition adams.flow.condition.bool.HasRows
+       adams.flow.transformer.Convert -name "Convert (2)" -conversion "adams.data.conversion.TransposeSpreadSheet -use-header-as-first-column true"
+       adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.Invert -row-finder \"adams.data.spreadsheet.rowfinder.ByContentType -content-type MISSING\""
+       adams.flow.transformer.SpreadSheetRowFilter -name "SpreadSheetRowFilter (2)" -finder "adams.data.spreadsheet.rowfinder.ByValue -att-index first -reg-exp elem.*"
+       adams.flow.control.ConditionalTee -name "any data?" -condition adams.flow.condition.bool.HasRows
+        adams.flow.transformer.Convert -conversion "adams.data.conversion.SpreadSheetColumnsToReport -col-report-names 1 -cols-report-values 2 -rows-report 1-last"
+        adams.flow.transformer.GetArrayElement
+        adams.flow.transformer.SetStorageValue -storage-name report_clay
+     adams.flow.control.Trigger -name elemental_composition_soil
+      adams.flow.source.StorageValue -storage-name elemental_composition_soil -conversion adams.data.conversion.UnknownToUnknown
+      adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.ByStringComparison -att-index sampleno -minimum @{sampleno} -minimum-included true -maximum @{sampleno} -maximum-included true" -create-view true
+      adams.flow.transformer.DeleteStorageValue -storage-name report_soil
+      adams.flow.control.ConditionalTee -name "any data?" -condition adams.flow.condition.bool.HasRows
+       adams.flow.transformer.Convert -name "Convert (2)" -conversion "adams.data.conversion.TransposeSpreadSheet -use-header-as-first-column true"
+       adams.flow.transformer.SpreadSheetRowFilter -finder "adams.data.spreadsheet.rowfinder.Invert -row-finder \"adams.data.spreadsheet.rowfinder.ByContentType -content-type MISSING\""
+       adams.flow.transformer.SpreadSheetRowFilter -name "SpreadSheetRowFilter (2)" -finder "adams.data.spreadsheet.rowfinder.ByValue -att-index first -reg-exp elem.*"
+       adams.flow.control.ConditionalTee -name "any data?" -condition adams.flow.condition.bool.HasRows
+        adams.flow.transformer.Convert -conversion "adams.data.conversion.SpreadSheetColumnsToReport -col-report-names 1 -cols-report-values 2 -rows-report 1-last"
+        adams.flow.transformer.GetArrayElement
+        adams.flow.transformer.SetStorageValue -storage-name report_soil
+    adams.flow.transformer.SetSampleDataValue -name sampleno -field SampleNo[S] -value @{sampleno}
+    adams.flow.transformer.SetSampleDataValue -name "sample type" -field "Sample Type[S]" -value soil
+    adams.flow.control.ConditionalSubProcess -name "clay meta-data?" -condition "adams.flow.condition.bool.HasStorageValue -storage-name report_clay"
+     adams.flow.transformer.MergeReport -type STORAGE -storage report_clay
+    adams.flow.control.ConditionalSubProcess -name "soil meta-data?" -condition "adams.flow.condition.bool.HasStorageValue -storage-name report_soil"
+     adams.flow.transformer.MergeReport -type STORAGE -storage report_soil
+    adams.flow.control.Tee -name save
+     adams.flow.transformer.SpectrumFileWriter -writer @{writer} -dir @{output_dir} -file-name-generation ID
+    adams.flow.control.Tee -name info
+     adams.flow.transformer.GetID
+     adams.flow.transformer.StringInsert -position first -value "Spectrum: "
+     adams.flow.sink.CallableSink -callable Info
