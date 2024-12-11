@@ -620,7 +620,7 @@
         </configuration>
       </plugin>
 
-      <!--plugin>
+      <plugin>
         <groupId>nz.ac.waikato.cms.adams</groupId>
         <artifactId>adams-maven-plugin</artifactId>
         <version>${adams.version}</version>
@@ -628,10 +628,11 @@
           <execution>
             <goals>
               <goal>classlister</goal>
+              <goal>optionlister</goal>
             </goals>
           </execution>
         </executions>
-      </plugin-->
+      </plugin>
     </plugins>
   </build>
 </project>
