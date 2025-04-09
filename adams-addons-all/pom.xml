@@ -639,6 +639,21 @@
       <type>test-jar</type>
     </dependency>
 
+    <!-- adams-imaging-djl -->
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-imaging-djl</artifactId>
+      <version>${adams.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>nz.ac.waikato.cms.adams</groupId>
+      <artifactId>adams-imaging-djl</artifactId>
+      <version>${adams.version}</version>
+      <scope>test</scope>
+      <type>test-jar</type>
+    </dependency>
+
     <!-- imaging-ext -->
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
