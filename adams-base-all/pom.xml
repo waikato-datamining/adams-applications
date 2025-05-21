@@ -728,6 +728,12 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- mvn duplicate-finder:check -->
+      <plugin>
+        <groupId>org.basepom.maven</groupId>
+        <artifactId>duplicate-finder-maven-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 </project>
