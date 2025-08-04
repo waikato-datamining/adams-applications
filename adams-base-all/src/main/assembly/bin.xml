@@ -35,6 +35,7 @@
       <outputDirectory>/</outputDirectory>
       <includes>
         <include>*.props</include>
+        <include>*.xml</include>
       </includes>
     </fileSet>
     
