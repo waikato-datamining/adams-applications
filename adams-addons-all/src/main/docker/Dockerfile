@@ -7,7 +7,7 @@ FROM ${DOCKER_REGISTRY}ubuntu:24.04
 # install java, wget and bash
 RUN    apt-get -y update \
     && apt-get -y upgrade \
-    && apt-get -y install openjdk-17-jdk \
+    && apt-get -y install openjdk-21-jdk \
     && apt-get -y install wget bash \
     && rm -rf /var/lib/apt/lists/*
 
