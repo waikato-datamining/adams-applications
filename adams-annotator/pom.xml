@@ -536,7 +536,7 @@
           </copyResources>
           <useDefaultFixPermissions>true</useDefaultFixPermissions>
           <packageDependencies>
-            <packageDependency>openjdk-11-jre | openjdk-1-jre-headless | openjdk-17-jre | openjdk-17-jre-headless | openjdk-21-jre | openjdk-21-jre-headless</packageDependency>
+            <packageDependency>openjdk-11-jre | openjdk-1-jre-headless | openjdk-17-jre | openjdk-17-jre-headless | openjdk-21-jre | openjdk-21-jre-headless | openjdk-25-jre | openjdk-25-jre-headless</packageDependency>
           </packageDependencies>
         </configuration>
       </plugin>
