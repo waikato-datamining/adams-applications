@@ -1172,6 +1172,7 @@
           <execution>
             <goals>
               <goal>classlister</goal>
+              <goal>classlisterjson</goal>
               <goal>optionlister</goal>
             </goals>
           </execution>
